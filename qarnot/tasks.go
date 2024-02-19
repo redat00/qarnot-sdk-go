@@ -6,65 +6,30 @@ import (
 	"time"
 )
 
+// Struct representing the content of a prefix filtering field
 type PrefixFiltering struct {
 	Prefix string `json:"prefix"`
 }
 
+// Struct representing a prefix filtering field
 type Filtering struct {
 	PrefixFiltering PrefixFiltering `json:"prefixFiltering"`
 }
 
-type PerRunningInstanceInfo struct {
-	ActiveForwards        any    `json:"activeForwards"`
-	Phase                 string `json:"phase"`
-	InstanceID            int    `json:"instanceId"`
-	MaxFrequencyGHz       int    `json:"maxFrequencyGHz"`
-	CurrentFrequencyGHz   int    `json:"currentFrequencyGHz"`
-	CPUUsage              int    `json:"cpuUsage"`
-	MaxMemoryMB           int    `json:"maxMemoryMB"`
-	CurrentMemoryMB       int    `json:"currentMemoryMB"`
-	MemoryUsage           int    `json:"memoryUsage"`
-	NetworkInKbps         int    `json:"networkInKbps"`
-	NetworkOutKbps        int    `json:"networkOutKbps"`
-	Progress              int    `json:"progress"`
-	ExecutionTimeSec      int    `json:"executionTimeSec"`
-	ExecutionTimeGHz      int    `json:"executionTimeGHz"`
-	SpecificationKey      any    `json:"specificationKey"`
-	CPUModel              any    `json:"cpuModel"`
-	CoreCount             int    `json:"coreCount"`
-	ExecutionAttemptCount int    `json:"executionAttemptCount"`
-	ClockRatio            int    `json:"clockRatio"`
-}
-
-type RunningInstancesInfo struct {
-	PerRunningInstanceInfo     []PerRunningInstanceInfo `json:"perRunningInstanceInfo"`
-	SnapshotResults            []any                    `json:"snapshotResults"`
-	Timestamp                  time.Time                `json:"timestamp"`
-	AverageFrequencyGHz        int                      `json:"averageFrequencyGHz"`
-	MaxFrequencyGHz            int                      `json:"maxFrequencyGHz"`
-	MinFrequencyGHz            int                      `json:"minFrequencyGHz"`
-	AverageMaxFrequencyGHz     int                      `json:"averageMaxFrequencyGHz"`
-	AverageCPUUsage            int                      `json:"averageCpuUsage"`
-	ClusterPowerIndicator      int                      `json:"clusterPowerIndicator"`
-	AverageMemoryUsage         int                      `json:"averageMemoryUsage"`
-	AverageNetworkInKbps       int                      `json:"averageNetworkInKbps"`
-	AverageNetworkOutKbps      int                      `json:"averageNetworkOutKbps"`
-	TotalNetworkInKbps         int                      `json:"totalNetworkInKbps"`
-	TotalNetworkOutKbps        int                      `json:"totalNetworkOutKbps"`
-	RunningCoreCountByCPUModel any                      `json:"runningCoreCountByCpuModel"`
-}
-
+// Struct representing the execution time by cpu model for a task status
 type ExecutionTimeByCPUModel struct {
 	Model string  `json:"model"`
 	Time  float64 `json:"time"`
 	Core  int     `json:"core"`
 }
 
+// Struct representing the execution time by machine specification for a task status
 type ExecutionTimeByMachineSpecification struct {
 	SpecificationKey string  `json:"specificationKey"`
 	Time             float64 `json:"time"`
 }
 
+// Struct representing the execution time by instance id for a task status
 type ExecutionTimeByInstanceID struct {
 	InstanceId       int     `json:"instanceId"`
 	SpecificationKey string  `json:"specificationKey"`
@@ -74,6 +39,7 @@ type ExecutionTimeByInstanceID struct {
 	ClockRatio       float64 `json:"clockRatio"`
 }
 
+// Struct representing the execution time by ghz and cpu model for a task status
 type ExecutionTimeGhzByCPUModel struct {
 	Model      string  `json:"model"`
 	TimeGHz    float64 `json:"timeGHz"`
@@ -81,6 +47,7 @@ type ExecutionTimeGhzByCPUModel struct {
 	Core       int     `json:"core"`
 }
 
+// Struct representing a task status for a task
 type TaskStatus struct {
 	Timestamp                           time.Time                             `json:"timestamp"`
 	LastUpdateTimestamp                 time.Time                             `json:"lastUpdateTimestamp"`
@@ -110,24 +77,30 @@ type TaskStatus struct {
 	StartedOnceRange                    string                                `json:"startedOnceRange"`
 }
 
+// Struct representing a constant for a task
 type Constant struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
 }
+
+// Struct representing a Qarnot public error
 type QErrorPublic struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
 	Debug   string `json:"debug"`
 }
 
+// Struct representing a prefix field for the resource transformation struct
 type StripPrefix struct {
 	Prefix string `json:"prefix"`
 }
 
+// Struct representing the resource transformation settings for a task advanced resource bucket
 type ResourceTransformation struct {
 	StripPrefix StripPrefix `json:"stripPrefix"`
 }
 
+// Struct representing a task advanced resource bucket setting for a task
 type TaskAdvancedResourceBucket struct {
 	BucketName             string                 `json:"bucketName"`
 	Filtering              Filtering              `json:"filtering"`
@@ -135,6 +108,7 @@ type TaskAdvancedResourceBucket struct {
 	CacheTTLSec            int                    `jons:"cacheTTLSec"`
 }
 
+// Struct represetning a completed instance field for a task
 type CompletedInstance struct {
 	Results               []string     `json:"results"`
 	InstanceId            int          `json:"instanceId"`
@@ -152,32 +126,39 @@ type CompletedInstance struct {
 	ExecutionAttemptCount int          `json:"executionAttemptCount"`
 }
 
+// Struct representing the by secret settings for secrets access rights
 type BySecret struct {
 	Key string `json:"key"`
 }
 
+// Struct representing the by prefix settings for secrets access rights
 type ByPrefix struct {
 	Prefix string `json:"prefix"`
 }
 
+// Struct representing the secrets and access rights for a task
 type SecretsAccessRights struct {
 	BySecret []BySecret `json:"bySecret"`
 	ByPrefix []ByPrefix `json:"byPrefix"`
 }
 
+// Struct representing the dependencies for a task
 type Dependencies struct {
 	DependsOn []string `json:"dependsOn"`
 }
 
+// Struct representing the privileges for a task
 type Privileges struct {
 	ExportApiAndStorageCredentialsInEnvironment bool `json:"exportApiAndStorageCredentialsInEnvironment"`
 }
 
+// Struct representing the retry settings for a task
 type RetrySettings struct {
 	MaxTotalRetries       int `json:"maxTotalRetries"`
 	MaxPerInstanceRetries int `json:"maxPerInstanceRetries"`
 }
 
+// Enum for the scheduling type
 type SchedulingType string
 
 const (
@@ -186,6 +167,7 @@ const (
 	Reserved SchedulingType = "reserved"
 )
 
+// Struct representing a task with full details
 type Task struct {
 	Errors                              []QErrorPublic       `json:"errors"`
 	ResourceBuckets                     []string             `json:"resourceBuckets"`
@@ -232,6 +214,7 @@ type Task struct {
 	WaitForPoolResourcesSynchronization bool                 `json:"waitForPoolResourcesSynchronization"`
 }
 
+// Will list the tasks for the authenticated user
 func (c *Client) ListTasks() []Task {
 	data, _ := c.sendRequest(
 		"GET",
@@ -249,6 +232,7 @@ func (c *Client) ListTasks() []Task {
 	return tasks
 }
 
+// Will get the info for a task
 func (c *Client) GetTaskInfo(uuid string) Task {
 	data, _ := c.sendRequest("GET", []byte{}, nil, fmt.Sprintf("tasks/%v", uuid))
 
@@ -261,6 +245,7 @@ func (c *Client) GetTaskInfo(uuid string) Task {
 	return taskInfo
 }
 
+// Enum for the access constant string
 type AccessConstant string
 
 const (
@@ -268,6 +253,7 @@ const (
 	ReadWrite AccessConstant = "readWrite"
 )
 
+// Struct representing a ForcedConstant for the CreateTask payload
 type ForcedConstant struct {
 	ConstantName             string         `json:"constantName"`
 	ForcedValue              string         `json:"forcedValue"`
@@ -275,6 +261,7 @@ type ForcedConstant struct {
 	Access                   AccessConstant `json:"access"`
 }
 
+// Struct representing the payload for the CreateTask method
 type CreateTaskPayload struct {
 	Name                                string                        `json:"name"`
 	Shortname                           string                        `json:"shortname,omitempty"`
@@ -313,10 +300,13 @@ type CreateTaskPayload struct {
 	RetrySettings                       *RetrySettings                `json:"retrySettings,omitempty"`
 }
 
+// Struct representing a UUID response
 type UUIDResponse struct {
 	Uuid string `json:"uuid"`
 }
 
+// Will create a task, based on a `CreateTaskPayload`
+// Returns a `UUIDResponse` struct, containing a UUID for the newly created task
 func (c *Client) CreateTask(payload CreateTaskPayload) UUIDResponse {
 	payloadJson, err := json.Marshal(payload)
 	if err != nil {
@@ -333,6 +323,7 @@ func (c *Client) CreateTask(payload CreateTaskPayload) UUIDResponse {
 	return response
 }
 
+// Struct representing a task summary
 type TaskSummary struct {
 	Uuid                                string
 	Name                                string
@@ -357,6 +348,7 @@ type TaskSummary struct {
 	WaitForPoolResourcesSynchronization bool
 }
 
+// Will list task summaries for the authenticated user
 func (c *Client) ListTaskSummaries() []TaskSummary {
 	data, _ := c.sendRequest("GET", []byte{}, nil, "tasks/summaries")
 
@@ -369,14 +361,17 @@ func (c *Client) ListTaskSummaries() []TaskSummary {
 	return summaries
 }
 
+// Will delete a task
 func (c *Client) DeleteTask(uuid string) {
 	c.sendRequest("DELETE", []byte{}, nil, fmt.Sprintf("tasks/%v", uuid))
 }
 
+// Will abort a task
 func (c *Client) AbortTask(uuid string) {
 	c.sendRequest("POST", []byte{}, nil, fmt.Sprintf("tasks/%v/abort", uuid))
 }
 
+// Will get the stdout for a task
 func (c *Client) GetTaskStdout(uuid string) string {
 	data, _ := c.sendRequest("GET", []byte{}, nil, fmt.Sprintf("tasks/%v/stdout", uuid))
 
@@ -389,6 +384,7 @@ func (c *Client) GetTaskStdout(uuid string) string {
 	return stdout
 }
 
+// Will get the previous stdout for a task
 func (c *Client) GetLastTaskStdout(uuid string) string {
 	data, _ := c.sendRequest("POST", []byte{}, nil, fmt.Sprintf("tasks/%v/stdout", uuid))
 
@@ -401,6 +397,7 @@ func (c *Client) GetLastTaskStdout(uuid string) string {
 	return stdout
 }
 
+// Will get the stdout for a task on a specific instance
 func (c *Client) GetTaskInstanceStdout(uuid string, instanceId int) string {
 	data, _ := c.sendRequest("GET", []byte{}, nil, fmt.Sprintf("tasks/%v/stdout/%v", uuid, instanceId))
 
@@ -413,6 +410,7 @@ func (c *Client) GetTaskInstanceStdout(uuid string, instanceId int) string {
 	return stdout
 }
 
+// Will get the previous stdout for a task on a specific instance
 func (c *Client) GetLastTaskInstanceStdout(uuid string, instanceId int) string {
 	data, _ := c.sendRequest("POST", []byte{}, nil, fmt.Sprintf("tasks/%v/stdout/%v", uuid, instanceId))
 
@@ -425,6 +423,7 @@ func (c *Client) GetLastTaskInstanceStdout(uuid string, instanceId int) string {
 	return stdout
 }
 
+// Will get the stderr for a task
 func (c *Client) GetTaskStderr(uuid string) string {
 	data, _ := c.sendRequest("GET", []byte{}, nil, fmt.Sprintf("tasks/%v/stderr", uuid))
 
@@ -437,6 +436,7 @@ func (c *Client) GetTaskStderr(uuid string) string {
 	return stderr
 }
 
+// Will get the previous stderr for a task
 func (c *Client) GetLastTaskStderr(uuid string) string {
 	data, _ := c.sendRequest("POST", []byte{}, nil, fmt.Sprintf("tasks/%v/stderr", uuid))
 
@@ -449,8 +449,9 @@ func (c *Client) GetLastTaskStderr(uuid string) string {
 	return stderr
 }
 
-func (c *Client) GetInstanceTaskStderr(uuid string) string {
-	data, _ := c.sendRequest("GET", []byte{}, nil, fmt.Sprintf("tasks/%v/stderr", uuid))
+// Will get the stderr for a task on a specific instance
+func (c *Client) GetInstanceTaskStderr(uuid string, instanceId int) string {
+	data, _ := c.sendRequest("GET", []byte{}, nil, fmt.Sprintf("tasks/%v/stderr/%v", uuid, instanceId))
 
 	var stderr string
 	err := json.Unmarshal(data, &stderr)
@@ -461,8 +462,9 @@ func (c *Client) GetInstanceTaskStderr(uuid string) string {
 	return stderr
 }
 
-func (c *Client) GetInstanceLastTaskStderr(uuid string) string {
-	data, _ := c.sendRequest("POST", []byte{}, nil, fmt.Sprintf("tasks/%v/stderr", uuid))
+// Will get the previous stderr for a task on a specific instance
+func (c *Client) GetInstanceLastTaskStderr(uuid string, instanceId int) string {
+	data, _ := c.sendRequest("POST", []byte{}, nil, fmt.Sprintf("tasks/%v/stderr/%v", uuid, instanceId))
 
 	var stderr string
 	err := json.Unmarshal(data, &stderr)
@@ -473,6 +475,8 @@ func (c *Client) GetInstanceLastTaskStderr(uuid string) string {
 	return stderr
 }
 
+// Struct representing the payload for creating unique and periodic snapshot
+// Interval should only be filled for periodic snapshot, otherwise it will just get ignored
 type CreateTaskSnapshotPayload struct {
 	Interval     int    `json:"interval,omitempty"`
 	Whitelist    string `json:"whitelist,omitempty"`
@@ -481,6 +485,7 @@ type CreateTaskSnapshotPayload struct {
 	BucketPrefix string `json:"bucketPrefix,omitempty"`
 }
 
+// Will create a periodic snapshot for a task using the UUID as string and a `CreateTaskSnapshotPayload` struct as arguments
 func (c *Client) CreateTaskPeriodicSnapshot(uuid string, payload CreateTaskSnapshotPayload) {
 	payloadJson, err := json.Marshal(payload)
 	if err != nil {
@@ -490,6 +495,7 @@ func (c *Client) CreateTaskPeriodicSnapshot(uuid string, payload CreateTaskSnaps
 	c.sendRequest("POST", payloadJson, nil, fmt.Sprintf("tasks/%v/snapshot/periodic", uuid))
 }
 
+// Will create a unique snapshot for a task using the UUID as string and a `CreateTaskSnapshotPayload` struct as arguments
 func (c *Client) CreateTaskUniqueSnapshot(uuid string, payload CreateTaskSnapshotPayload) {
 	payloadJson, err := json.Marshal(payload)
 	if err != nil {
@@ -499,6 +505,8 @@ func (c *Client) CreateTaskUniqueSnapshot(uuid string, payload CreateTaskSnapsho
 	c.sendRequest("POST", payloadJson, nil, fmt.Sprintf("tasks/%v/snapshot", uuid))
 }
 
+// Will retry a task using the UUID as string, and a `CreateTaskPayload` struct as arguments
+// Return a `UUIDResponse` containing the UUID of the newly retried task
 func (c *Client) RetryTask(uuid string, payload CreateTaskPayload) UUIDResponse {
 	payloadJson, err := json.Marshal(payload)
 	if err != nil {
@@ -516,6 +524,8 @@ func (c *Client) RetryTask(uuid string, payload CreateTaskPayload) UUIDResponse 
 	return response
 }
 
+// Will recover a task using the UUID as string, and a `CreateTaskPayload` struct as arguments
+// Return a `UUIDResponse` containing the UUID of the newly recovered task
 func (c *Client) RecoverTask(uuid string, payload CreateTaskPayload) UUIDResponse {
 	payloadJson, err := json.Marshal(payload)
 	if err != nil {
@@ -533,6 +543,8 @@ func (c *Client) RecoverTask(uuid string, payload CreateTaskPayload) UUIDRespons
 	return response
 }
 
+// Will resume a task using the UUID as string, and a `CreateTaskPayload` struct as arguments
+// Return a `UUIDResponse` containing the UUID of the newly resumed task
 func (c *Client) ResumeTask(uuid string, payload CreateTaskPayload) UUIDResponse {
 	payloadJson, err := json.Marshal(payload)
 	if err != nil {
@@ -550,6 +562,8 @@ func (c *Client) ResumeTask(uuid string, payload CreateTaskPayload) UUIDResponse
 	return response
 }
 
+// Will clone a task using the UUID as string, and a `CreateTaskPayload` struct as arguments
+// Return a `UUIDResponse` containing the UUID of the newly cloned task
 func (c *Client) CloneTask(uuid string, payload CreateTaskPayload) UUIDResponse {
 	payloadJson, err := json.Marshal(payload)
 	if err != nil {
@@ -567,11 +581,13 @@ func (c *Client) CloneTask(uuid string, payload CreateTaskPayload) UUIDResponse 
 	return response
 }
 
+// A struct representing the payload for the `UpdateTask` method
 type UpdateTaskPayload struct {
 	Constants []Constant `json:"constants,omitempty"`
 	Tags      []string   `json:"tags,omitempty"`
 }
 
+// Will update the fields of a task using the UUID as an argument, as well as a `UpdateTaskPayload` struct
 func (c *Client) UpdateTask(uuid string, payload UpdateTaskPayload) {
 	payloadJson, err := json.Marshal(payload)
 	if err != nil {
