@@ -1,6 +1,11 @@
 package qarnot
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+
+	"github.com/redat00/qarnot-sdk-go/internal/helpers"
+)
 
 type ReservedQuotas struct {
 	MachineKey   string `json:"machineKey"`
@@ -38,17 +43,18 @@ type UserInfo struct {
 	DefaultReservedSpecificationKey string           `json:"defaultReservedSpecificationKey"`
 }
 
-func (c *Client) GetUserInfo() UserInfo {
+func (c *Client) GetUserInfo() (UserInfo, error) {
 	// Send request and get back data
-	data, _ := c.sendRequest("GET", []byte{}, make(map[string]string), "info")
+	data, _, err := c.sendRequest("GET", []byte{}, make(map[string]string), "info")
+	if err != nil {
+		return UserInfo{}, fmt.Errorf("could not get user info due to the following error : %v", err)
+	}
 
 	// Convert data to UserInfo struct
 	var userInfo UserInfo
-	err := json.Unmarshal(data, &userInfo)
-	if err != nil {
-		panic(err)
-	}
+	err = json.Unmarshal(data, &userInfo)
+	helpers.JsonUnmarshalCheckError(err)
 
 	// Return UserInfo
-	return userInfo
+	return userInfo, nil
 }

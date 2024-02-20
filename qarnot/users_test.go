@@ -52,7 +52,7 @@ func TestGetUserInfo(t *testing.T) {
 		t.Errorf("could not create a new client: %v", err)
 	}
 
-	userInfo := client.GetUserInfo()
+	userInfo, _ := client.GetUserInfo()
 
 	expectedData := UserInfo{
 		Email:                           "test@example.org",
@@ -86,5 +86,30 @@ func TestGetUserInfo(t *testing.T) {
 
 	if !reflect.DeepEqual(expectedData, userInfo) {
 		t.Errorf("error in values. Expected %+v, found %+v", expectedData, userInfo)
+	}
+}
+
+func TestGetUserInfoBadToken(t *testing.T) {
+	expected := "{\"error\":{\"message\":\"Bad authentication token\",\"code\":401},\"data\":{}}"
+	srv := httptest.NewServer(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(401)
+			fmt.Fprint(w, expected)
+		}),
+	)
+	defer srv.Close()
+
+	client, err := NewClient(srv.URL, "xxx", "v1")
+	if err != nil {
+		t.Errorf("could not create a new client: %v", err)
+	}
+
+	_, err = client.GetUserInfo()
+	expectedData := "could not get user info due to the following error : [HTTP 401] Bad authentication token"
+
+	if err.Error() != expectedData {
+		t.Errorf("different values.")
+		t.Errorf("expected : %v", expectedData)
+		t.Errorf("found    : %v", err.Error())
 	}
 }

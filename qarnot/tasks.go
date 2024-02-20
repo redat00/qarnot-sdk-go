@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"time"
+
+	"github.com/redat00/qarnot-sdk-go/internal/helpers"
 )
 
 // Struct representing the content of a prefix filtering field
@@ -214,37 +216,6 @@ type Task struct {
 	WaitForPoolResourcesSynchronization bool                 `json:"waitForPoolResourcesSynchronization"`
 }
 
-// Will list the tasks for the authenticated user
-func (c *Client) ListTasks() []Task {
-	data, _ := c.sendRequest(
-		"GET",
-		[]byte{},
-		make(map[string]string),
-		"tasks",
-	)
-
-	var tasks []Task
-	err := json.Unmarshal(data, &tasks)
-	if err != nil {
-		panic(err)
-	}
-
-	return tasks
-}
-
-// Will get the info for a task
-func (c *Client) GetTaskInfo(uuid string) Task {
-	data, _ := c.sendRequest("GET", []byte{}, nil, fmt.Sprintf("tasks/%v", uuid))
-
-	var taskInfo Task
-	err := json.Unmarshal(data, &taskInfo)
-	if err != nil {
-		panic(err)
-	}
-
-	return taskInfo
-}
-
 // Enum for the access constant string
 type AccessConstant string
 
@@ -305,24 +276,6 @@ type UUIDResponse struct {
 	Uuid string `json:"uuid"`
 }
 
-// Will create a task, based on a `CreateTaskPayload`
-// Returns a `UUIDResponse` struct, containing a UUID for the newly created task
-func (c *Client) CreateTask(payload CreateTaskPayload) UUIDResponse {
-	payloadJson, err := json.Marshal(payload)
-	if err != nil {
-		panic(err)
-	}
-
-	data, _ := c.sendRequest("POST", payloadJson, nil, "tasks")
-	var response UUIDResponse
-	err = json.Unmarshal(data, &response)
-	if err != nil {
-		panic(err)
-	}
-
-	return response
-}
-
 // Struct representing a task summary
 type TaskSummary struct {
 	Uuid                                string
@@ -348,133 +301,6 @@ type TaskSummary struct {
 	WaitForPoolResourcesSynchronization bool
 }
 
-// Will list task summaries for the authenticated user
-func (c *Client) ListTaskSummaries() []TaskSummary {
-	data, _ := c.sendRequest("GET", []byte{}, nil, "tasks/summaries")
-
-	var summaries []TaskSummary
-	err := json.Unmarshal(data, &summaries)
-	if err != nil {
-		panic(err)
-	}
-
-	return summaries
-}
-
-// Will delete a task
-func (c *Client) DeleteTask(uuid string) {
-	c.sendRequest("DELETE", []byte{}, nil, fmt.Sprintf("tasks/%v", uuid))
-}
-
-// Will abort a task
-func (c *Client) AbortTask(uuid string) {
-	c.sendRequest("POST", []byte{}, nil, fmt.Sprintf("tasks/%v/abort", uuid))
-}
-
-// Will get the stdout for a task
-func (c *Client) GetTaskStdout(uuid string) string {
-	data, _ := c.sendRequest("GET", []byte{}, nil, fmt.Sprintf("tasks/%v/stdout", uuid))
-
-	var stdout string
-	err := json.Unmarshal(data, &stdout)
-	if err != nil {
-		panic(err)
-	}
-
-	return stdout
-}
-
-// Will get the previous stdout for a task
-func (c *Client) GetLastTaskStdout(uuid string) string {
-	data, _ := c.sendRequest("POST", []byte{}, nil, fmt.Sprintf("tasks/%v/stdout", uuid))
-
-	var stdout string
-	err := json.Unmarshal(data, &stdout)
-	if err != nil {
-		panic(err)
-	}
-
-	return stdout
-}
-
-// Will get the stdout for a task on a specific instance
-func (c *Client) GetTaskInstanceStdout(uuid string, instanceId int) string {
-	data, _ := c.sendRequest("GET", []byte{}, nil, fmt.Sprintf("tasks/%v/stdout/%v", uuid, instanceId))
-
-	var stdout string
-	err := json.Unmarshal(data, &stdout)
-	if err != nil {
-		panic(err)
-	}
-
-	return stdout
-}
-
-// Will get the previous stdout for a task on a specific instance
-func (c *Client) GetLastTaskInstanceStdout(uuid string, instanceId int) string {
-	data, _ := c.sendRequest("POST", []byte{}, nil, fmt.Sprintf("tasks/%v/stdout/%v", uuid, instanceId))
-
-	var stdout string
-	err := json.Unmarshal(data, &stdout)
-	if err != nil {
-		panic(err)
-	}
-
-	return stdout
-}
-
-// Will get the stderr for a task
-func (c *Client) GetTaskStderr(uuid string) string {
-	data, _ := c.sendRequest("GET", []byte{}, nil, fmt.Sprintf("tasks/%v/stderr", uuid))
-
-	var stderr string
-	err := json.Unmarshal(data, &stderr)
-	if err != nil {
-		panic(err)
-	}
-
-	return stderr
-}
-
-// Will get the previous stderr for a task
-func (c *Client) GetLastTaskStderr(uuid string) string {
-	data, _ := c.sendRequest("POST", []byte{}, nil, fmt.Sprintf("tasks/%v/stderr", uuid))
-
-	var stderr string
-	err := json.Unmarshal(data, &stderr)
-	if err != nil {
-		panic(err)
-	}
-
-	return stderr
-}
-
-// Will get the stderr for a task on a specific instance
-func (c *Client) GetInstanceTaskStderr(uuid string, instanceId int) string {
-	data, _ := c.sendRequest("GET", []byte{}, nil, fmt.Sprintf("tasks/%v/stderr/%v", uuid, instanceId))
-
-	var stderr string
-	err := json.Unmarshal(data, &stderr)
-	if err != nil {
-		panic(err)
-	}
-
-	return stderr
-}
-
-// Will get the previous stderr for a task on a specific instance
-func (c *Client) GetInstanceLastTaskStderr(uuid string, instanceId int) string {
-	data, _ := c.sendRequest("POST", []byte{}, nil, fmt.Sprintf("tasks/%v/stderr/%v", uuid, instanceId))
-
-	var stderr string
-	err := json.Unmarshal(data, &stderr)
-	if err != nil {
-		panic(err)
-	}
-
-	return stderr
-}
-
 // Struct representing the payload for creating unique and periodic snapshot
 // Interval should only be filled for periodic snapshot, otherwise it will just get ignored
 type CreateTaskSnapshotPayload struct {
@@ -485,118 +311,321 @@ type CreateTaskSnapshotPayload struct {
 	BucketPrefix string `json:"bucketPrefix,omitempty"`
 }
 
-// Will create a periodic snapshot for a task using the UUID as string and a `CreateTaskSnapshotPayload` struct as arguments
-func (c *Client) CreateTaskPeriodicSnapshot(uuid string, payload CreateTaskSnapshotPayload) {
-	payloadJson, err := json.Marshal(payload)
-	if err != nil {
-		panic(err)
-	}
-
-	c.sendRequest("POST", payloadJson, nil, fmt.Sprintf("tasks/%v/snapshot/periodic", uuid))
-}
-
-// Will create a unique snapshot for a task using the UUID as string and a `CreateTaskSnapshotPayload` struct as arguments
-func (c *Client) CreateTaskUniqueSnapshot(uuid string, payload CreateTaskSnapshotPayload) {
-	payloadJson, err := json.Marshal(payload)
-	if err != nil {
-		panic(err)
-	}
-
-	c.sendRequest("POST", payloadJson, nil, fmt.Sprintf("tasks/%v/snapshot", uuid))
-}
-
-// Will retry a task using the UUID as string, and a `CreateTaskPayload` struct as arguments
-// Return a `UUIDResponse` containing the UUID of the newly retried task
-func (c *Client) RetryTask(uuid string, payload CreateTaskPayload) UUIDResponse {
-	payloadJson, err := json.Marshal(payload)
-	if err != nil {
-		panic(err)
-	}
-
-	data, _ := c.sendRequest("POST", payloadJson, nil, fmt.Sprintf("tasks/%v/retry", uuid))
-
-	var response UUIDResponse
-	err = json.Unmarshal(data, &response)
-	if err != nil {
-		panic(err)
-	}
-
-	return response
-}
-
-// Will recover a task using the UUID as string, and a `CreateTaskPayload` struct as arguments
-// Return a `UUIDResponse` containing the UUID of the newly recovered task
-func (c *Client) RecoverTask(uuid string, payload CreateTaskPayload) UUIDResponse {
-	payloadJson, err := json.Marshal(payload)
-	if err != nil {
-		panic(err)
-	}
-
-	data, _ := c.sendRequest("POST", payloadJson, nil, fmt.Sprintf("tasks/%v/recover", uuid))
-
-	var response UUIDResponse
-	err = json.Unmarshal(data, &response)
-	if err != nil {
-		panic(err)
-	}
-
-	return response
-}
-
-// Will resume a task using the UUID as string, and a `CreateTaskPayload` struct as arguments
-// Return a `UUIDResponse` containing the UUID of the newly resumed task
-func (c *Client) ResumeTask(uuid string, payload CreateTaskPayload) UUIDResponse {
-	payloadJson, err := json.Marshal(payload)
-	if err != nil {
-		panic(err)
-	}
-
-	data, _ := c.sendRequest("POST", payloadJson, nil, fmt.Sprintf("tasks/%v/resume", uuid))
-
-	var response UUIDResponse
-	err = json.Unmarshal(data, &response)
-	if err != nil {
-		panic(err)
-	}
-
-	return response
-}
-
-// Will clone a task using the UUID as string, and a `CreateTaskPayload` struct as arguments
-// Return a `UUIDResponse` containing the UUID of the newly cloned task
-func (c *Client) CloneTask(uuid string, payload CreateTaskPayload) UUIDResponse {
-	payloadJson, err := json.Marshal(payload)
-	if err != nil {
-		panic(err)
-	}
-
-	data, _ := c.sendRequest("POST", payloadJson, nil, fmt.Sprintf("tasks/%v/clone", uuid))
-
-	var response UUIDResponse
-	err = json.Unmarshal(data, &response)
-	if err != nil {
-		panic(err)
-	}
-
-	return response
-}
-
 // A struct representing the payload for the `UpdateTask` method
 type UpdateTaskPayload struct {
 	Constants []Constant `json:"constants,omitempty"`
 	Tags      []string   `json:"tags,omitempty"`
 }
 
-// Will update the fields of a task using the UUID as an argument, as well as a `UpdateTaskPayload` struct
-func (c *Client) UpdateTask(uuid string, payload UpdateTaskPayload) {
-	payloadJson, err := json.Marshal(payload)
+// Will list the tasks for the authenticated user
+func (c *Client) ListTasks() ([]Task, error) {
+	data, statusCode, err := c.sendRequest(
+		"GET",
+		[]byte{},
+		make(map[string]string),
+		"tasks",
+	)
 	if err != nil {
-		panic(err)
+		return []Task{}, fmt.Errorf("could not list tasks due to the following error (HTTP %v) : %v", statusCode, err)
 	}
 
-	c.sendRequest("PUT", payloadJson, nil, fmt.Sprintf("tasks/%v", uuid))
+	var tasks []Task
+	err = json.Unmarshal(data, &tasks)
+	helpers.JsonUnmarshalCheckError(err)
+
+	return tasks, nil
 }
 
-func (c *Client) UpdateTaskResources(uuid string) {
-	c.sendRequest("PATCH", []byte{}, nil, fmt.Sprintf("tasks/%v", uuid))
+// Will get the info for a task
+func (c *Client) GetTaskInfo(uuid string) (Task, error) {
+	data, _, err := c.sendRequest("GET", []byte{}, nil, fmt.Sprintf("tasks/%v", uuid))
+	if err != nil {
+		return Task{}, fmt.Errorf("could not get task info due to the following error : %v", err)
+	}
+
+	var taskInfo Task
+	err = json.Unmarshal(data, &taskInfo)
+	helpers.JsonUnmarshalCheckError(err)
+
+	return taskInfo, nil
+}
+
+// Will create a task, based on a `CreateTaskPayload`
+// Returns a `UUIDResponse` struct, containing a UUID for the newly created task
+func (c *Client) CreateTask(payload CreateTaskPayload) (UUIDResponse, error) {
+	payloadJson, err := json.Marshal(payload)
+	helpers.JsonMarshalCheckError(err)
+
+	data, _, err := c.sendRequest("POST", payloadJson, nil, "tasks")
+	if err != nil {
+		return UUIDResponse{}, fmt.Errorf("could not create task due to the following error : %v", err)
+	}
+
+	var response UUIDResponse
+	err = json.Unmarshal(data, &response)
+	helpers.JsonUnmarshalCheckError(err)
+
+	return response, nil
+}
+
+// Will list task summaries for the authenticated user
+func (c *Client) ListTaskSummaries() ([]TaskSummary, error) {
+	data, _, err := c.sendRequest("GET", []byte{}, nil, "tasks/summaries")
+	if err != nil {
+		return []TaskSummary{}, fmt.Errorf("could not list task summaries due to the following error : %v", err)
+	}
+
+	var summaries []TaskSummary
+	err = json.Unmarshal(data, &summaries)
+	helpers.JsonUnmarshalCheckError(err)
+
+	return summaries, nil
+}
+
+// Will delete a task
+func (c *Client) DeleteTask(uuid string) error {
+	_, _, err := c.sendRequest("DELETE", []byte{}, nil, fmt.Sprintf("tasks/%v", uuid))
+	if err != nil {
+		return fmt.Errorf("could not delete task due to the following error : %v", err)
+	}
+	return nil
+}
+
+// Will abort a task
+func (c *Client) AbortTask(uuid string) error {
+	_, _, err := c.sendRequest("POST", []byte{}, nil, fmt.Sprintf("tasks/%v/abort", uuid))
+	if err != nil {
+		return fmt.Errorf("could not abort task due to the following error : %v", err)
+	}
+	return nil
+}
+
+// Will get the stdout for a task
+func (c *Client) GetTaskStdout(uuid string) (string, error) {
+	data, _, err := c.sendRequest("GET", []byte{}, nil, fmt.Sprintf("tasks/%v/stdout", uuid))
+	if err != nil {
+		return "", fmt.Errorf("could not get task stdout due to the following error : %v", err)
+	}
+
+	var stdout string
+	err = json.Unmarshal(data, &stdout)
+	helpers.JsonUnmarshalCheckError(err)
+
+	return stdout, nil
+}
+
+// Will get the previous stdout for a task
+func (c *Client) GetLastTaskStdout(uuid string) (string, error) {
+	data, _, err := c.sendRequest("POST", []byte{}, nil, fmt.Sprintf("tasks/%v/stdout", uuid))
+	if err != nil {
+		return "", fmt.Errorf("could not get last task stdout due to the following error : %v", err)
+	}
+
+	var stdout string
+	err = json.Unmarshal(data, &stdout)
+	helpers.JsonUnmarshalCheckError(err)
+
+	return stdout, nil
+}
+
+// Will get the stdout for a task on a specific instance
+func (c *Client) GetTaskInstanceStdout(uuid string, instanceId int) (string, error) {
+	data, _, err := c.sendRequest("GET", []byte{}, nil, fmt.Sprintf("tasks/%v/stdout/%v", uuid, instanceId))
+	if err != nil {
+		return "", fmt.Errorf("could not get task instance stdout due to the following error : %v", err)
+	}
+
+	var stdout string
+	err = json.Unmarshal(data, &stdout)
+	helpers.JsonUnmarshalCheckError(err)
+
+	return stdout, nil
+}
+
+// Will get the previous stdout for a task on a specific instance
+func (c *Client) GetLastTaskInstanceStdout(uuid string, instanceId int) (string, error) {
+	data, _, err := c.sendRequest("POST", []byte{}, nil, fmt.Sprintf("tasks/%v/stdout/%v", uuid, instanceId))
+	if err != nil {
+		return "", fmt.Errorf("could not get last task instance stdout due to the following error : %v", err)
+	}
+
+	var stdout string
+	err = json.Unmarshal(data, &stdout)
+	helpers.JsonUnmarshalCheckError(err)
+
+	return stdout, nil
+}
+
+// Will get the stderr for a task
+func (c *Client) GetTaskStderr(uuid string) (string, error) {
+	data, _, err := c.sendRequest("GET", []byte{}, nil, fmt.Sprintf("tasks/%v/stderr", uuid))
+	if err != nil {
+		return "", fmt.Errorf("could not get task stderr due to the following error : %v", err)
+	}
+
+	var stderr string
+	err = json.Unmarshal(data, &stderr)
+	helpers.JsonUnmarshalCheckError(err)
+
+	return stderr, nil
+}
+
+// Will get the previous stderr for a task
+func (c *Client) GetLastTaskStderr(uuid string) (string, error) {
+	data, _, err := c.sendRequest("POST", []byte{}, nil, fmt.Sprintf("tasks/%v/stderr", uuid))
+	if err != nil {
+		return "", fmt.Errorf("could not get last task stderr due to the following error : %v", err)
+	}
+
+	var stderr string
+	err = json.Unmarshal(data, &stderr)
+	helpers.JsonUnmarshalCheckError(err)
+
+	return stderr, nil
+}
+
+// Will get the stderr for a task on a specific instance
+func (c *Client) GetInstanceTaskStderr(uuid string, instanceId int) (string, error) {
+	data, _, err := c.sendRequest("GET", []byte{}, nil, fmt.Sprintf("tasks/%v/stderr/%v", uuid, instanceId))
+	if err != nil {
+		return "", fmt.Errorf("could not get task instance stderr due to the following error : %v", err)
+	}
+
+	var stderr string
+	err = json.Unmarshal(data, &stderr)
+	helpers.JsonUnmarshalCheckError(err)
+
+	return stderr, nil
+}
+
+// Will get the previous stderr for a task on a specific instance
+func (c *Client) GetInstanceLastTaskStderr(uuid string, instanceId int) (string, error) {
+	data, _, err := c.sendRequest("POST", []byte{}, nil, fmt.Sprintf("tasks/%v/stderr/%v", uuid, instanceId))
+	if err != nil {
+		return "", fmt.Errorf("could not get last task instance stderr due to the following error : %v", err)
+	}
+
+	var stderr string
+	err = json.Unmarshal(data, &stderr)
+	helpers.JsonUnmarshalCheckError(err)
+
+	return stderr, nil
+}
+
+// Will create a periodic snapshot for a task using the UUID as string and a `CreateTaskSnapshotPayload` struct as arguments
+func (c *Client) CreateTaskPeriodicSnapshot(uuid string, payload CreateTaskSnapshotPayload) error {
+	payloadJson, err := json.Marshal(payload)
+	helpers.JsonMarshalCheckError(err)
+
+	_, _, err = c.sendRequest("POST", payloadJson, nil, fmt.Sprintf("tasks/%v/snapshot/periodic", uuid))
+	if err != nil {
+		return fmt.Errorf("could not create a task periodic snapshot due to the following error : %v", err)
+	}
+
+	return nil
+}
+
+// Will create a unique snapshot for a task using the UUID as string and a `CreateTaskSnapshotPayload` struct as arguments
+func (c *Client) CreateTaskUniqueSnapshot(uuid string, payload CreateTaskSnapshotPayload) error {
+	payloadJson, err := json.Marshal(payload)
+	helpers.JsonMarshalCheckError(err)
+
+	_, _, err = c.sendRequest("POST", payloadJson, nil, fmt.Sprintf("tasks/%v/snapshot", uuid))
+	if err != nil {
+		return fmt.Errorf("could not create a task unique snapshot due to the following error : %v", err)
+	}
+
+	return nil
+}
+
+// Will retry a task using the UUID as string, and a `CreateTaskPayload` struct as arguments
+// Return a `UUIDResponse` containing the UUID of the newly retried task
+func (c *Client) RetryTask(uuid string, payload CreateTaskPayload) (UUIDResponse, error) {
+	payloadJson, err := json.Marshal(payload)
+	helpers.JsonMarshalCheckError(err)
+
+	data, _, err := c.sendRequest("POST", payloadJson, nil, fmt.Sprintf("tasks/%v/retry", uuid))
+	if err != nil {
+		return UUIDResponse{}, fmt.Errorf("could not retry task due to the following error : %v", err)
+	}
+
+	var response UUIDResponse
+	err = json.Unmarshal(data, &response)
+	helpers.JsonUnmarshalCheckError(err)
+
+	return response, nil
+}
+
+// Will recover a task using the UUID as string, and a `CreateTaskPayload` struct as arguments
+// Return a `UUIDResponse` containing the UUID of the newly recovered task
+func (c *Client) RecoverTask(uuid string, payload CreateTaskPayload) (UUIDResponse, error) {
+	payloadJson, err := json.Marshal(payload)
+	helpers.JsonMarshalCheckError(err)
+
+	data, _, err := c.sendRequest("POST", payloadJson, nil, fmt.Sprintf("tasks/%v/recover", uuid))
+	if err != nil {
+		return UUIDResponse{}, fmt.Errorf("could not recover task due to the following error : %v", err)
+	}
+
+	var response UUIDResponse
+	err = json.Unmarshal(data, &response)
+	helpers.JsonUnmarshalCheckError(err)
+	return response, nil
+}
+
+// Will resume a task using the UUID as string, and a `CreateTaskPayload` struct as arguments
+// Return a `UUIDResponse` containing the UUID of the newly resumed task
+func (c *Client) ResumeTask(uuid string, payload CreateTaskPayload) (UUIDResponse, error) {
+	payloadJson, err := json.Marshal(payload)
+	helpers.JsonMarshalCheckError(err)
+
+	data, _, err := c.sendRequest("POST", payloadJson, nil, fmt.Sprintf("tasks/%v/resume", uuid))
+	if err != nil {
+		return UUIDResponse{}, fmt.Errorf("could not resume task due to the following error : %v", err)
+	}
+
+	var response UUIDResponse
+	err = json.Unmarshal(data, &response)
+	helpers.JsonUnmarshalCheckError(err)
+
+	return response, nil
+}
+
+// Will clone a task using the UUID as string, and a `CreateTaskPayload` struct as arguments
+// Return a `UUIDResponse` containing the UUID of the newly cloned task
+func (c *Client) CloneTask(uuid string, payload CreateTaskPayload) (UUIDResponse, error) {
+	payloadJson, err := json.Marshal(payload)
+	helpers.JsonMarshalCheckError(err)
+
+	data, _, err := c.sendRequest("POST", payloadJson, nil, fmt.Sprintf("tasks/%v/clone", uuid))
+	if err != nil {
+		return UUIDResponse{}, fmt.Errorf("could not clone task due to the following error : %v", err)
+	}
+
+	var response UUIDResponse
+	err = json.Unmarshal(data, &response)
+	helpers.JsonUnmarshalCheckError(err)
+	return response, nil
+}
+
+// Will update the fields of a task using the UUID as an argument, as well as a `UpdateTaskPayload` struct
+func (c *Client) UpdateTask(uuid string, payload UpdateTaskPayload) error {
+	payloadJson, err := json.Marshal(payload)
+	helpers.JsonMarshalCheckError(err)
+
+	_, _, err = c.sendRequest("PUT", payloadJson, nil, fmt.Sprintf("tasks/%v", uuid))
+	if err != nil {
+		return fmt.Errorf("could not update task due to the following error : %v", err)
+	}
+
+	return nil
+}
+
+func (c *Client) UpdateTaskResources(uuid string) error {
+	_, _, err := c.sendRequest("PATCH", []byte{}, nil, fmt.Sprintf("tasks/%v", uuid))
+	if err != nil {
+		return fmt.Errorf("could not update task resources due to the following error : %v", err)
+	}
+
+	return nil
 }

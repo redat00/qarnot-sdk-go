@@ -24,7 +24,7 @@ func TestGetVersions(t *testing.T) {
 		t.Errorf("could not create a new client: %v", err)
 	}
 
-	versions := client.GetVersions()
+	versions, _ := client.GetVersions()
 	expectedData := Version{Version: "v0.1", EndOfLife: "2020-03-16"}
 	if !slices.Contains(versions, expectedData) {
 		t.Errorf("error in values. Expected %+v, found %+v", expectedData, versions)
