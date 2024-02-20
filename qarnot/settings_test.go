@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestGetSettings(t *testing.T) {
+func TestGetSettingsOK(t *testing.T) {
 	expected := "{\"storage\": \"https://storage.qarnot.com\"}"
 	srv := httptest.NewServer(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -23,10 +23,12 @@ func TestGetSettings(t *testing.T) {
 		t.Errorf("could not create a new client: %v", err)
 	}
 
-	settings := client.GetSettings()
+	settings, _ := client.GetSettings()
 	expectedData := Settings{Storage: "https://storage.qarnot.com"}
 
 	if settings != expectedData {
-		t.Errorf("different values, expected %v, found %v", expectedData, settings)
+		t.Errorf("different value.")
+		t.Errorf("expected : %v", expectedData)
+		t.Errorf("found    : %v", settings)
 	}
 }

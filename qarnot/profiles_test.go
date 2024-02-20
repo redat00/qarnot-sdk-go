@@ -24,11 +24,38 @@ func TestListProfiles(t *testing.T) {
 		t.Errorf("could not create a new client: %v", err)
 	}
 
-	profiles := client.ListProfiles()
+	profiles, _ := client.ListProfiles()
 	expectedData := []string{"guerilla-v2", "docker-network", "docker-network-ssh"}
 
 	if !reflect.DeepEqual(profiles, expectedData) {
-		t.Errorf("different values, expected %v, found %v", expectedData, profiles)
+		t.Errorf("different values.")
+		t.Errorf("expected : %v", expectedData)
+		t.Errorf("found    : %v", profiles)
+	}
+}
+
+func TestListProfilesBadToken(t *testing.T) {
+	expected := "{\"error\":{\"message\":\"Bad authentication token\",\"code\":401},\"data\":{}}"
+	srv := httptest.NewServer(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(401)
+			fmt.Fprint(w, expected)
+		}),
+	)
+	defer srv.Close()
+
+	client, err := NewClient(srv.URL, "xxx", "v1")
+	if err != nil {
+		t.Errorf("could not create a new client: %v", err)
+	}
+
+	_, err = client.ListProfiles()
+	expectedData := "could not get the list of profiles due to the following error : [HTTP 401] Bad authentication token"
+
+	if err.Error() != expectedData {
+		t.Errorf("different values.")
+		t.Errorf("expected : %v", expectedData)
+		t.Errorf("found    : %v", err.Error())
 	}
 }
 
@@ -65,7 +92,7 @@ func TestGetProfileDetails(t *testing.T) {
 		t.Errorf("could not create a new client: %v", err)
 	}
 
-	profileDetails := client.GetProfileDetails("docker-network")
+	profileDetails, _ := client.GetProfileDetails("docker-network")
 	expectedData := ProfileDetails{
 		Name: "docker-network",
 		Constants: []ProfileConstant{
@@ -85,7 +112,32 @@ func TestGetProfileDetails(t *testing.T) {
 
 	if !reflect.DeepEqual(profileDetails, expectedData) {
 		t.Errorf("different values found")
-		t.Errorf("found    : %+v", profileDetails)
-		t.Errorf("expected : %+v", expectedData)
+		t.Errorf("found    : %v", profileDetails)
+		t.Errorf("expected : %v", expectedData)
+	}
+}
+
+func TestGetProfilesDetailsBadToken(t *testing.T) {
+	expected := "{\"error\":{\"message\":\"Bad authentication token\",\"code\":401},\"data\":{}}"
+	srv := httptest.NewServer(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(401)
+			fmt.Fprint(w, expected)
+		}),
+	)
+	defer srv.Close()
+
+	client, err := NewClient(srv.URL, "xxx", "v1")
+	if err != nil {
+		t.Errorf("could not create a new client: %v", err)
+	}
+
+	_, err = client.GetProfileDetails("test")
+	expectedData := "could not get profiles details due to the following error : [HTTP 401] Bad authentication token"
+
+	if err.Error() != expectedData {
+		t.Errorf("different values.")
+		t.Errorf("expected : %v", expectedData)
+		t.Errorf("found    : %v", err.Error())
 	}
 }

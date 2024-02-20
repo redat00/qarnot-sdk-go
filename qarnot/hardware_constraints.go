@@ -1,6 +1,11 @@
 package qarnot
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+
+	"github.com/redat00/qarnot-sdk-go/internal/helpers"
+)
 
 type Discriminator string
 
@@ -37,14 +42,15 @@ type HardwareConstraintsResponse struct {
 	Total  int                  `json:"total"`
 }
 
-func (c *Client) ListHardwareConstraints() HardwareConstraintsResponse {
-	data, _ := c.sendRequest("GET", []byte{}, nil, "hardware-constraints")
-
-	var response HardwareConstraintsResponse
-	err := json.Unmarshal(data, &response)
+func (c *Client) ListHardwareConstraints() (HardwareConstraintsResponse, error) {
+	data, _, err := c.sendRequest("GET", []byte{}, nil, "hardware-constraints")
 	if err != nil {
-		panic(err)
+		return HardwareConstraintsResponse{}, fmt.Errorf("could not retrieve list of hardware constraints due to the following error : %v", err)
 	}
 
-	return response
+	var response HardwareConstraintsResponse
+	err = json.Unmarshal(data, &response)
+	helpers.JsonUnmarshalCheckError(err)
+
+	return response, nil
 }

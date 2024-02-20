@@ -3,19 +3,9 @@ package qarnot
 import (
 	"encoding/json"
 	"fmt"
+
+	"github.com/redat00/qarnot-sdk-go/internal/helpers"
 )
-
-func (c *Client) ListProfiles() []string {
-	data, _ := c.sendRequest("GET", []byte{}, nil, "profiles")
-
-	var profiles []string
-	err := json.Unmarshal(data, &profiles)
-	if err != nil {
-		panic(err)
-	}
-
-	return profiles
-}
 
 type ProfileLicence struct {
 	Name         string
@@ -35,14 +25,28 @@ type ProfileDetails struct {
 	Licences  []ProfileLicence  `json:"licences"`
 }
 
-func (c *Client) GetProfileDetails(name string) ProfileDetails {
-	data, _ := c.sendRequest("GET", []byte{}, nil, fmt.Sprintf("profiles/%v", name))
-
-	var profileDetails ProfileDetails
-	err := json.Unmarshal(data, &profileDetails)
+func (c *Client) ListProfiles() ([]string, error) {
+	data, _, err := c.sendRequest("GET", []byte{}, nil, "profiles")
 	if err != nil {
-		panic(err)
+		return []string{}, fmt.Errorf("could not get the list of profiles due to the following error : %v", err)
 	}
 
-	return profileDetails
+	var profiles []string
+	err = json.Unmarshal(data, &profiles)
+	helpers.JsonUnmarshalCheckError(err)
+
+	return profiles, nil
+}
+
+func (c *Client) GetProfileDetails(name string) (ProfileDetails, error) {
+	data, _, err := c.sendRequest("GET", []byte{}, nil, fmt.Sprintf("profiles/%v", name))
+	if err != nil {
+		return ProfileDetails{}, fmt.Errorf("could not get profiles details due to the following error : %v", err)
+	}
+
+	var profileDetails ProfileDetails
+	err = json.Unmarshal(data, &profileDetails)
+	helpers.JsonUnmarshalCheckError(err)
+
+	return profileDetails, nil
 }

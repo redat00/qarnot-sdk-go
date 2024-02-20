@@ -2,10 +2,13 @@ package qarnot
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"time"
+
+	"github.com/redat00/qarnot-sdk-go/internal/helpers"
 )
 
 type Client struct {
@@ -15,7 +18,17 @@ type Client struct {
 	version    string
 }
 
-func (c *Client) sendRequest(method string, payload []byte, headers map[string]string, endpoint string) ([]byte, int) {
+type subErrorResponse struct {
+	Message string `json:"message"`
+	Code    int    `json:"code"`
+}
+
+type errorResponse struct {
+	Message string           `json:"message,omitempty"`
+	Error   subErrorResponse `json:"error,omitempty"`
+}
+
+func (c *Client) sendRequest(method string, payload []byte, headers map[string]string, endpoint string) ([]byte, int, error) {
 	// Build the request using url and endpoint
 	var req *http.Request
 	var err error
@@ -25,12 +38,17 @@ func (c *Client) sendRequest(method string, payload []byte, headers map[string]s
 		req, err = http.NewRequest(method, fmt.Sprintf("%v/%v/%v", c.url, c.version, endpoint), nil)
 	}
 	if err != nil {
-		return []byte{}, 0
+		return []byte{}, 0, fmt.Errorf("could not create request due to the following error: %v", err)
 	}
 
 	// Add required headers to request
 	req.Header.Add("Authorization", c.apiKey)
 	req.Header.Add("Content-Type", "application/json")
+
+	// Add more headers
+	for k, v := range headers {
+		req.Header.Add(k, v)
+	}
 
 	// Launch the request using the HTTP client
 	resp, err := c.httpClient.Do(req)
@@ -47,11 +65,22 @@ func (c *Client) sendRequest(method string, payload []byte, headers map[string]s
 
 	// Check that the request did not fail
 	if resp.StatusCode >= 400 {
-		panic(fmt.Errorf("an error happened during the treatment of the request : \nendpoint: %v\nbody:%v", endpoint, string(body)))
+		var reqError errorResponse
+		err := json.Unmarshal(body, &reqError)
+		helpers.JsonUnmarshalCheckError(err)
+
+		var message string
+		if reqError.Message != "" {
+			message = reqError.Message
+		} else {
+			message = reqError.Error.Message
+		}
+
+		return []byte{}, resp.StatusCode, fmt.Errorf("[HTTP %v] %v", resp.StatusCode, message)
 	}
 
 	// Return the response
-	return body, resp.StatusCode
+	return body, resp.StatusCode, nil
 }
 
 func NewClient(url string, apiKey string, version string) (*Client, error) {
