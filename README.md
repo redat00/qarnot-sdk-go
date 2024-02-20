@@ -1,6 +1,6 @@
 # Qarnot Computing Go SDK
 
-# THIS IS STILL A WIP, PREPARE YOURSELF FOR BREAKING CHANGE, DON'T USE IN PRODUCTION
+THIS IS STILL A WIP, PREPARE YOURSELF FOR BREAKING CHANGE, DON'T USE IN PRODUCTION
 
 This library allows you to interact with Qarnot API through your Go code.
 
@@ -27,11 +27,105 @@ func main() {
 		Profile:       "docker-batch",
 		InstanceCount: 1,
 		Constants: &[]qarnot.Constant{
-			qarnot.Constant{Key: "DOCKER_CMD", Value: "echo \"Hello world\""},
+			{Key: "DOCKER_CMD", Value: "echo \"Hello world\""},
 		},
 		SchedulingType: qarnot.SchedulingType("flex"),
 	}
-	client.CreateTask(newTaskPayload)
+	err := client.CreateTask(newTaskPayload)
+	if err != nil {
+		panic(err)
+	}
 }
 ```
 
+## Status of the project
+
+This section aims at keeping track of the project, see where we're at and give you an idea of what you can expect.
+
+### Endpoint implementation
+
+In this section you can find the list of all the endpoints, and how we implement them in the SDK.
+
+#### Hardware Constraints
+
+| Endpoint | SDK Equivalent | Status | Comment |
+| --- | --- | --- | --- |
+| `GET /hardware-constraints` | `Client.ListHardwareConstraints` | ✅ | - |
+| `GET /hardware-constraints/cpu-model-constraints/search` | - | ❌ | - |
+
+#### Jobs
+
+| Endpoint | SDK Equivalent | Status | Comment |
+| --- | --- | --- | --- |
+| `GET /jobs` | `Client.ListJobs` | ✅ | - |
+| `POST /jobs` | `Client.CreateJob` | ✅ | - |
+| `POST /jobs/search` | - | ❌ | - |
+| `POST /jobs/paginate` | - | ❌ | - |
+| `POST /jobs/{uuid}/terminate` | `Client.TerminateJob` | ✅ | - |
+| `DELETE /jobs/{uuid}` | `Client.DeleteJob` | ✅ | - |
+| `GET /jobs/{uuid}` | `Client.GetJobInfo` | ✅ | - |
+| `GET /jobs/{uuid}/tasks` | `Client.ListJobTasks` | ✅ | - |
+
+#### Pools
+
+None (for now).
+
+#### Pool Scaling Sanity Check
+
+None (for now).
+
+#### Profiles
+
+| Endpoint | SDK Equivalent | Status | Comment |
+| --- | --- | --- | --- |
+| `GET /profiles` | `Client.ListProfiles` | ✅ | - |
+| `GET /profiles/{profile}` | `Client.GetProfileDetails` | ✅ | - |
+
+#### Settings
+
+| Endpoint | SDK Equivalent | Status | Comment |
+| --- | --- | --- | --- |
+| `GET /settings` | `Client.GetSettings` | ✅ | - |
+
+#### Tasks
+
+| Endpoint | SDK Equivalent | Status | Comment |
+| --- | --- | --- | --- |
+| `GET /tasks` | `Client.ListTasks` | ✅ | - |
+| `POST /tasks` | `Client.CreateTask` | ✅ | - |
+| `GET /tasks/summaries` | `Client.ListTasksSummaries` | ✅ | - |
+| `POST /tasks/summaries/paginate` | - | ❌ | - |
+| `POST /tasks/search` | - | ❌ | - |
+| `POST /tasks/paginate` | - | ❌ | - |
+| `POST /tasks/{uuid}/snapshot/periodic` | `Client.CreateTaskPeriodicSnapshot` | ✅ | - |
+| `POST /tasks/{uuid}/snapshot/unique` | `Client.CreateTaskUniqueSnapshot` | ✅ | - |
+| `POST /tasks/{uuid}/retry` | `Client.RetryTask` | ✅ | - |
+| `POST /tasks/{uuid}/recover` | `Client.RecoverTask` | ✅ | - |
+| `POST /tasks/{uuid}/resume` | `Client.ResumeTask` | ✅ | - |
+| `POST /tasks/{uuid}/clone` | `Client.CloneTask` | ✅ | - |
+| `PUT /tasks/{uuid}` | `Client.UpdateTask` | ✅ | - |
+| `PATCH /tasks/{uuid}` | `Client.UpdateTaskResources` | ✅ | - |
+| `DELETE /tasks/{uuid}` | `Client.DeleteTask` | ✅ | - |
+| `GET /tasks/{uuid}` | `Client.GetTaskInformation` | ✅ | - |
+| `POST /tasks/{uuid}/abort` | `Client.AbortTask` | ✅ | - |
+| `GET /tasks/{uuid}/stdout` | `Client.GetTaskStdout` | ✅ | - |
+| `POST /tasks/{uuid}/stdout` | `Client.GetLastTaskStdout` | ✅ | - |
+| `GET /tasks/{uuid}/stdout/{instance}` | `Client.GetTaskInstanceStdout` | ✅ | - |
+| `POST /tasks/{uuid}/stdout/{instance}` | `Client.GetLastTaskInstanceStdout` | ✅ | - |
+| `GET /tasks/{uuid}/stderr` | `Client.GetTaskStderr` | ✅ | - |
+| `POST /tasks/{uuid}/stderr` | `Client.GetLastTaskStderr` | ✅ | - |
+| `GET /tasks/{uuid}/stderr/{instance}` | `Client.GetTaskInstanceStderr` | ✅ | - |
+| `POST /tasks/{uuid}/stderr/{instance}` | `Client.GetLastTaskInstanceStderr` | ✅ | - |
+
+#### Users
+
+| Endpoint | SDK Equivalent | Status | Comment |
+| --- | --- | --- | --- |
+| `GET /info` | `Client.GetUserInfo` | ✅ | - |
+
+
+#### Versions
+
+| Endpoint | SDK Equivalent | Status | Comment |
+| --- | --- | --- | --- |
+| `GET /versions` | `Client.GetVersions` | ✅ | - |
