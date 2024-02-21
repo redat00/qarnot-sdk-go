@@ -19,7 +19,15 @@ func TestListProfiles(t *testing.T) {
 	)
 	defer srv.Close()
 
-	client, err := NewClient(srv.URL, "xxx", "v1")
+	qarnotConfig := QarnotConfig{
+		ApiUrl:     srv.URL,
+		ApiKey:     "xxx",
+		Email:      "test@example.org",
+		Version:    "v1",
+		StorageUrl: "http://fake.storage.qarnope.com",
+	}
+
+	client, err := NewClient(&qarnotConfig)
 	if err != nil {
 		t.Errorf("could not create a new client: %v", err)
 	}
@@ -44,7 +52,15 @@ func TestListProfilesBadToken(t *testing.T) {
 	)
 	defer srv.Close()
 
-	client, err := NewClient(srv.URL, "xxx", "v1")
+	qarnotConfig := QarnotConfig{
+		ApiUrl:     srv.URL,
+		ApiKey:     "xxx",
+		Email:      "test@example.org",
+		Version:    "v1",
+		StorageUrl: "http://fake.storage.qarnope.com",
+	}
+
+	client, err := NewClient(&qarnotConfig)
 	if err != nil {
 		t.Errorf("could not create a new client: %v", err)
 	}
@@ -87,7 +103,15 @@ func TestGetProfileDetails(t *testing.T) {
 	)
 	defer srv.Close()
 
-	client, err := NewClient(srv.URL, "xxx", "v1")
+	qarnotConfig := QarnotConfig{
+		ApiUrl:     srv.URL,
+		ApiKey:     "xxx",
+		Email:      "test@example.org",
+		Version:    "v1",
+		StorageUrl: "http://fake.storage.qarnope.com",
+	}
+
+	client, err := NewClient(&qarnotConfig)
 	if err != nil {
 		t.Errorf("could not create a new client: %v", err)
 	}
@@ -127,7 +151,15 @@ func TestGetProfilesDetailsBadToken(t *testing.T) {
 	)
 	defer srv.Close()
 
-	client, err := NewClient(srv.URL, "xxx", "v1")
+	qarnotConfig := QarnotConfig{
+		ApiUrl:     srv.URL,
+		ApiKey:     "xxx",
+		Email:      "test@example.org",
+		Version:    "v1",
+		StorageUrl: "http://fake.storage.qarnope.com",
+	}
+
+	client, err := NewClient(&qarnotConfig)
 	if err != nil {
 		t.Errorf("could not create a new client: %v", err)
 	}

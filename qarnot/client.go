@@ -2,21 +2,19 @@ package qarnot
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/redat00/qarnot-sdk-go/internal/helpers"
 )
-
-type Client struct {
-	httpClient http.Client
-	url        string
-	apiKey     string
-	version    string
-}
 
 type subErrorResponse struct {
 	Message string `json:"message"`
@@ -26,6 +24,14 @@ type subErrorResponse struct {
 type errorResponse struct {
 	Message string           `json:"message,omitempty"`
 	Error   subErrorResponse `json:"error,omitempty"`
+}
+
+type Client struct {
+	httpClient *http.Client
+	url        string
+	apiKey     string
+	version    string
+	s3         *s3.Client
 }
 
 func (c *Client) sendRequest(method string, payload []byte, headers map[string]string, endpoint string) ([]byte, int, error) {
@@ -83,19 +89,45 @@ func (c *Client) sendRequest(method string, payload []byte, headers map[string]s
 	return body, resp.StatusCode, nil
 }
 
-func NewClient(url string, apiKey string, version string) (*Client, error) {
+type QarnotConfig struct {
+	ApiUrl     string
+	ApiKey     string
+	Email      string
+	Version    string
+	StorageUrl string
+}
+
+func NewClient(qarnotConfig *QarnotConfig) (*Client, error) {
 	// Create an HTTP client
 	httpClient := &http.Client{
 		Timeout:   15 * time.Second,
 		Transport: http.DefaultTransport,
 	}
 
+	// Create an AWS Config
+	awsConfig, err := config.LoadDefaultConfig(
+		context.TODO(),
+		config.WithRegion("default"),
+		config.WithCredentialsProvider(
+			credentials.NewStaticCredentialsProvider(qarnotConfig.Email, qarnotConfig.ApiKey, ""),
+		),
+	)
+	if err != nil {
+		return &Client{}, fmt.Errorf("could not create S3 configuration: %v", err)
+	}
+
+	// Create an S3 Client
+	s3Client := s3.NewFromConfig(awsConfig, func(o *s3.Options) {
+		o.BaseEndpoint = aws.String(qarnotConfig.StorageUrl)
+	})
+
 	// Create the actual API client
 	client := Client{
-		httpClient: *httpClient,
-		url:        url,
-		apiKey:     apiKey,
-		version:    version,
+		httpClient: httpClient,
+		url:        qarnotConfig.ApiUrl,
+		apiKey:     qarnotConfig.ApiKey,
+		version:    qarnotConfig.Version,
+		s3:         s3Client,
 	}
 
 	// Return the client
