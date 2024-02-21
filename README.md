@@ -17,7 +17,15 @@ import (
 )
 
 func main() {
-	client, err := qarnot.NewClient("https://api.qarnot.com", "MY_SUPER_TOKEN", "v1")
+	client, err := qarnot.NewClient(
+		&qarnot.QarnotConfig{
+			ApiUrl:     "https://api.qarnot.com",
+			ApiKey:     "MY_SUPER_TOKEN",
+			Email:      "test@example.org",
+			Version:    "v1",
+			StorageUrl: "https://storage.qarnot.com",
+		},
+	)
 	if err != nil {
 		panic(err)
 	}
@@ -41,6 +49,14 @@ func main() {
 ## Status of the project
 
 This section aims at keeping track of the project, see where we're at and give you an idea of what you can expect.
+
+### TODO
+
+- Write a CI/CD
+- Clearly needs more tests. E2E tests would be great (with Minio for bucket for example). Coverage should at least be at 70% to seem acceptable
+- Needs to rework the way decoding errors are actually handled. `panic` is not acceptable in a library : The end user should be responsible for handling error.
+- Needs to rework the differents methods, especially for tasks.
+- Document a little bit more, add examples.
 
 ### Endpoint implementation
 
@@ -129,3 +145,21 @@ None (for now).
 | Endpoint | SDK Equivalent | Status | Comment |
 | --- | --- | --- | --- |
 | `GET /versions` | `Client.GetVersions` | ✅ | - |
+
+### Bucket Implementation
+
+Bucket are managed through classic S3 protocol. This SDK handles directly the S3 part so you don't have to do it on your side.
+
+For now some options are not really used/exposed, such as the multiparts upload. More to come.
+
+
+
+| Action | SDK Equivalent | Status | Comment |
+| ------ | -------------- | ------ | ------- |
+| Create bucket | `client.CreateBucket` | ✅ | - |
+| Delete bucket | `client.DeleteBucket` | ✅ | - |
+| List buckets | `client.ListBuckets` | ✅ | - |
+| List bucket objects | `client.ListObjects` | ✅ | - |
+| Upload object | `client.UploadObject` | ✅ | - |
+| Delete object | `client.DeleteObject` | ✅ | - |
+| Get object head | `client.GetObjectHead` | ✅ | - |
