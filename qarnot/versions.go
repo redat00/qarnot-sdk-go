@@ -7,11 +7,6 @@ import (
 	"github.com/redat00/qarnot-sdk-go/internal/helpers"
 )
 
-type Version struct {
-	Version   string
-	EndOfLife string
-}
-
 func (c *Client) GetVersions() ([]Version, error) {
 	data, _, err := c.sendRequest("GET", []byte{}, make(map[string]string), "versions")
 	if err != nil {
@@ -23,4 +18,9 @@ func (c *Client) GetVersions() ([]Version, error) {
 	helpers.JsonUnmarshalCheckError(err)
 
 	return versions, nil
+}
+
+type Version struct {
+	Version   string
+	EndOfLife string
 }
