@@ -48,23 +48,30 @@ func (c *Client) ListJobs() ([]Job, error) {
 
 	var jobs []Job
 	err = json.Unmarshal(resp, &jobs)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return nil, helpers.FormatJsonUnmarshalError(err)
+	}
 
 	return jobs, nil
 }
 
 func (c *Client) CreateJob(payload CreateJobPayload) (CreateJobResponse, error) {
+	var response CreateJobResponse
+
 	payloadJson, err := json.Marshal(payload)
-	helpers.JsonMarshalCheckError(err)
+	if err != nil {
+		return response, helpers.FormatJsonMarshalError(err)
+	}
 
 	data, _, err := c.sendRequest("POST", payloadJson, nil, "jobs")
 	if err != nil {
-		return CreateJobResponse{}, err
+		return response, err
 	}
 
-	var response CreateJobResponse
 	err = json.Unmarshal(data, &response)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return response, helpers.FormatJsonUnmarshalError(err)
+	}
 
 	return response, nil
 }
@@ -100,7 +107,9 @@ func (c *Client) GetJobInfo(uuid string) (Job, error) {
 
 	var job Job
 	err = json.Unmarshal(data, &job)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return Job{}, helpers.FormatJsonUnmarshalError(err)
+	}
 
 	return job, nil
 }
@@ -113,7 +122,9 @@ func (c *Client) ListJobTasks(uuid string) ([]Task, error) {
 
 	var tasks []Task
 	err = json.Unmarshal(data, &tasks)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return nil, helpers.FormatJsonUnmarshalError(err)
+	}
 
 	return tasks, nil
 }

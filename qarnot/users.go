@@ -53,7 +53,9 @@ func (c *Client) GetUserInfo() (UserInfo, error) {
 	// Convert data to UserInfo struct
 	var userInfo UserInfo
 	err = json.Unmarshal(data, &userInfo)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return userInfo, helpers.FormatJsonUnmarshalError(err)
+	}
 
 	// Return UserInfo
 	return userInfo, nil

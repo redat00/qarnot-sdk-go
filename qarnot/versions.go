@@ -15,7 +15,9 @@ func (c *Client) GetVersions() ([]Version, error) {
 
 	var versions []Version
 	err = json.Unmarshal(data, &versions)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return versions, helpers.FormatJsonUnmarshalError(err)
+	}
 
 	return versions, nil
 }

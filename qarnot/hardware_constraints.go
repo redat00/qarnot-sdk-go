@@ -50,7 +50,9 @@ func (c *Client) ListHardwareConstraints() (HardwareConstraintsResponse, error) 
 
 	var response HardwareConstraintsResponse
 	err = json.Unmarshal(data, &response)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return HardwareConstraintsResponse{}, helpers.FormatJsonUnmarshalError(err)
+	}
 
 	return response, nil
 }

@@ -19,7 +19,9 @@ func (c *Client) GetSettings() (Settings, error) {
 
 	var settings Settings
 	err = json.Unmarshal(data, &settings)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return Settings{}, helpers.FormatJsonUnmarshalError(err)
+	}
 
 	return settings, nil
 }

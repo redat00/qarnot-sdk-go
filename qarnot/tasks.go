@@ -331,7 +331,9 @@ func (c *Client) ListTasks() ([]Task, error) {
 
 	var tasks []Task
 	err = json.Unmarshal(data, &tasks)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return tasks, helpers.FormatJsonUnmarshalError(err)
+	}
 
 	return tasks, nil
 }
@@ -345,7 +347,9 @@ func (c *Client) GetTaskInfo(uuid string) (Task, error) {
 
 	var taskInfo Task
 	err = json.Unmarshal(data, &taskInfo)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return Task{}, helpers.FormatJsonUnmarshalError(err)
+	}
 
 	return taskInfo, nil
 }
@@ -353,17 +357,22 @@ func (c *Client) GetTaskInfo(uuid string) (Task, error) {
 // Will create a task, based on a `CreateTaskPayload`
 // Returns a `UUIDResponse` struct, containing a UUID for the newly created task
 func (c *Client) CreateTask(payload CreateTaskPayload) (UUIDResponse, error) {
+	var response UUIDResponse
+
 	payloadJson, err := json.Marshal(payload)
-	helpers.JsonMarshalCheckError(err)
+	if err != nil {
+		return UUIDResponse{}, helpers.FormatJsonMarshalError(err)
+	}
 
 	data, _, err := c.sendRequest("POST", payloadJson, nil, "tasks")
 	if err != nil {
 		return UUIDResponse{}, fmt.Errorf("could not create task due to the following error : %v", err)
 	}
 
-	var response UUIDResponse
 	err = json.Unmarshal(data, &response)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return response, helpers.FormatJsonUnmarshalError(err)
+	}
 
 	return response, nil
 }
@@ -377,7 +386,9 @@ func (c *Client) ListTaskSummaries() ([]TaskSummary, error) {
 
 	var summaries []TaskSummary
 	err = json.Unmarshal(data, &summaries)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return summaries, helpers.FormatJsonUnmarshalError(err)
+	}
 
 	return summaries, nil
 }
@@ -409,7 +420,9 @@ func (c *Client) GetTaskStdout(uuid string) (string, error) {
 
 	var stdout string
 	err = json.Unmarshal(data, &stdout)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return stdout, helpers.FormatJsonUnmarshalError(err)
+	}
 
 	return stdout, nil
 }
@@ -423,7 +436,9 @@ func (c *Client) GetLastTaskStdout(uuid string) (string, error) {
 
 	var stdout string
 	err = json.Unmarshal(data, &stdout)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return stdout, helpers.FormatJsonUnmarshalError(err)
+	}
 
 	return stdout, nil
 }
@@ -437,7 +452,9 @@ func (c *Client) GetTaskInstanceStdout(uuid string, instanceId int) (string, err
 
 	var stdout string
 	err = json.Unmarshal(data, &stdout)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return stdout, helpers.FormatJsonUnmarshalError(err)
+	}
 
 	return stdout, nil
 }
@@ -451,7 +468,9 @@ func (c *Client) GetLastTaskInstanceStdout(uuid string, instanceId int) (string,
 
 	var stdout string
 	err = json.Unmarshal(data, &stdout)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return stdout, helpers.FormatJsonUnmarshalError(err)
+	}
 
 	return stdout, nil
 }
@@ -465,7 +484,9 @@ func (c *Client) GetTaskStderr(uuid string) (string, error) {
 
 	var stderr string
 	err = json.Unmarshal(data, &stderr)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return stderr, helpers.FormatJsonUnmarshalError(err)
+	}
 
 	return stderr, nil
 }
@@ -479,7 +500,9 @@ func (c *Client) GetLastTaskStderr(uuid string) (string, error) {
 
 	var stderr string
 	err = json.Unmarshal(data, &stderr)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return stderr, helpers.FormatJsonUnmarshalError(err)
+	}
 
 	return stderr, nil
 }
@@ -493,7 +516,9 @@ func (c *Client) GetInstanceTaskStderr(uuid string, instanceId int) (string, err
 
 	var stderr string
 	err = json.Unmarshal(data, &stderr)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return stderr, helpers.FormatJsonUnmarshalError(err)
+	}
 
 	return stderr, nil
 }
@@ -507,7 +532,9 @@ func (c *Client) GetInstanceLastTaskStderr(uuid string, instanceId int) (string,
 
 	var stderr string
 	err = json.Unmarshal(data, &stderr)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return stderr, helpers.FormatJsonUnmarshalError(err)
+	}
 
 	return stderr, nil
 }
@@ -515,8 +542,9 @@ func (c *Client) GetInstanceLastTaskStderr(uuid string, instanceId int) (string,
 // Will create a periodic snapshot for a task using the UUID as string and a `CreateTaskSnapshotPayload` struct as arguments
 func (c *Client) CreateTaskPeriodicSnapshot(uuid string, payload CreateTaskSnapshotPayload) error {
 	payloadJson, err := json.Marshal(payload)
-	helpers.JsonMarshalCheckError(err)
-
+	if err != nil {
+		return helpers.FormatJsonMarshalError(err)
+	}
 	_, _, err = c.sendRequest("POST", payloadJson, nil, fmt.Sprintf("tasks/%v/snapshot/periodic", uuid))
 	if err != nil {
 		return fmt.Errorf("could not create a task periodic snapshot due to the following error : %v", err)
@@ -528,7 +556,9 @@ func (c *Client) CreateTaskPeriodicSnapshot(uuid string, payload CreateTaskSnaps
 // Will create a unique snapshot for a task using the UUID as string and a `CreateTaskSnapshotPayload` struct as arguments
 func (c *Client) CreateTaskUniqueSnapshot(uuid string, payload CreateTaskSnapshotPayload) error {
 	payloadJson, err := json.Marshal(payload)
-	helpers.JsonMarshalCheckError(err)
+	if err != nil {
+		return helpers.FormatJsonMarshalError(err)
+	}
 
 	_, _, err = c.sendRequest("POST", payloadJson, nil, fmt.Sprintf("tasks/%v/snapshot", uuid))
 	if err != nil {
@@ -541,17 +571,22 @@ func (c *Client) CreateTaskUniqueSnapshot(uuid string, payload CreateTaskSnapsho
 // Will retry a task using the UUID as string, and a `CreateTaskPayload` struct as arguments
 // Return a `UUIDResponse` containing the UUID of the newly retried task
 func (c *Client) RetryTask(uuid string, payload CreateTaskPayload) (UUIDResponse, error) {
+	var response UUIDResponse
+
 	payloadJson, err := json.Marshal(payload)
-	helpers.JsonMarshalCheckError(err)
+	if err != nil {
+		return response, helpers.FormatJsonMarshalError(err)
+	}
 
 	data, _, err := c.sendRequest("POST", payloadJson, nil, fmt.Sprintf("tasks/%v/retry", uuid))
 	if err != nil {
 		return UUIDResponse{}, fmt.Errorf("could not retry task due to the following error : %v", err)
 	}
 
-	var response UUIDResponse
 	err = json.Unmarshal(data, &response)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return response, helpers.FormatJsonUnmarshalError(err)
+	}
 
 	return response, nil
 }
@@ -559,34 +594,44 @@ func (c *Client) RetryTask(uuid string, payload CreateTaskPayload) (UUIDResponse
 // Will recover a task using the UUID as string, and a `CreateTaskPayload` struct as arguments
 // Return a `UUIDResponse` containing the UUID of the newly recovered task
 func (c *Client) RecoverTask(uuid string, payload CreateTaskPayload) (UUIDResponse, error) {
+	var response UUIDResponse
+
 	payloadJson, err := json.Marshal(payload)
-	helpers.JsonMarshalCheckError(err)
+	if err != nil {
+		return response, helpers.FormatJsonMarshalError(err)
+	}
 
 	data, _, err := c.sendRequest("POST", payloadJson, nil, fmt.Sprintf("tasks/%v/recover", uuid))
 	if err != nil {
 		return UUIDResponse{}, fmt.Errorf("could not recover task due to the following error : %v", err)
 	}
 
-	var response UUIDResponse
 	err = json.Unmarshal(data, &response)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return response, helpers.FormatJsonUnmarshalError(err)
+	}
 	return response, nil
 }
 
 // Will resume a task using the UUID as string, and a `CreateTaskPayload` struct as arguments
 // Return a `UUIDResponse` containing the UUID of the newly resumed task
 func (c *Client) ResumeTask(uuid string, payload CreateTaskPayload) (UUIDResponse, error) {
+	var response UUIDResponse
+
 	payloadJson, err := json.Marshal(payload)
-	helpers.JsonMarshalCheckError(err)
+	if err != nil {
+		return response, helpers.FormatJsonMarshalError(err)
+	}
 
 	data, _, err := c.sendRequest("POST", payloadJson, nil, fmt.Sprintf("tasks/%v/resume", uuid))
 	if err != nil {
 		return UUIDResponse{}, fmt.Errorf("could not resume task due to the following error : %v", err)
 	}
 
-	var response UUIDResponse
 	err = json.Unmarshal(data, &response)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return response, helpers.FormatJsonUnmarshalError(err)
+	}
 
 	return response, nil
 }
@@ -594,24 +639,31 @@ func (c *Client) ResumeTask(uuid string, payload CreateTaskPayload) (UUIDRespons
 // Will clone a task using the UUID as string, and a `CreateTaskPayload` struct as arguments
 // Return a `UUIDResponse` containing the UUID of the newly cloned task
 func (c *Client) CloneTask(uuid string, payload CreateTaskPayload) (UUIDResponse, error) {
+	var response UUIDResponse
+
 	payloadJson, err := json.Marshal(payload)
-	helpers.JsonMarshalCheckError(err)
+	if err != nil {
+		return response, helpers.FormatJsonMarshalError(err)
+	}
 
 	data, _, err := c.sendRequest("POST", payloadJson, nil, fmt.Sprintf("tasks/%v/clone", uuid))
 	if err != nil {
 		return UUIDResponse{}, fmt.Errorf("could not clone task due to the following error : %v", err)
 	}
 
-	var response UUIDResponse
 	err = json.Unmarshal(data, &response)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return response, helpers.FormatJsonUnmarshalError(err)
+	}
 	return response, nil
 }
 
 // Will update the fields of a task using the UUID as an argument, as well as a `UpdateTaskPayload` struct
 func (c *Client) UpdateTask(uuid string, payload UpdateTaskPayload) error {
 	payloadJson, err := json.Marshal(payload)
-	helpers.JsonMarshalCheckError(err)
+	if err != nil {
+		return helpers.FormatJsonMarshalError(err)
+	}
 
 	_, _, err = c.sendRequest("PUT", payloadJson, nil, fmt.Sprintf("tasks/%v", uuid))
 	if err != nil {
