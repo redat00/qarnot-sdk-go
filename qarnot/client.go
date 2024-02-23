@@ -73,7 +73,9 @@ func (c *Client) sendRequest(method string, payload []byte, headers map[string]s
 	if resp.StatusCode >= 400 {
 		var reqError errorResponse
 		err := json.Unmarshal(body, &reqError)
-		helpers.JsonUnmarshalCheckError(err)
+		if err != nil {
+			return []byte{}, 0, helpers.FormatJsonUnmarshalError(err)
+		}
 
 		var message string
 		if reqError.Message != "" {

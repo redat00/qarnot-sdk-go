@@ -33,7 +33,9 @@ func (c *Client) ListProfiles() ([]string, error) {
 
 	var profiles []string
 	err = json.Unmarshal(data, &profiles)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return nil, helpers.FormatJsonUnmarshalError(err)
+	}
 
 	return profiles, nil
 }
@@ -46,7 +48,9 @@ func (c *Client) GetProfileDetails(name string) (ProfileDetails, error) {
 
 	var profileDetails ProfileDetails
 	err = json.Unmarshal(data, &profileDetails)
-	helpers.JsonUnmarshalCheckError(err)
+	if err != nil {
+		return ProfileDetails{}, helpers.FormatJsonUnmarshalError(err)
+	}
 
 	return profileDetails, nil
 }
