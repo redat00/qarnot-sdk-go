@@ -24,4 +24,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.22.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.27.2 // indirect
 	github.com/aws/smithy-go v1.20.1 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/r3labs/diff v1.1.0 // indirect
 )
