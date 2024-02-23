@@ -51,32 +51,32 @@ type ExecutionTimeGhzByCPUModel struct {
 
 // Struct representing a task status for a task
 type TaskStatus struct {
-	Timestamp                           time.Time                             `json:"timestamp"`
-	LastUpdateTimestamp                 time.Time                             `json:"lastUpdateTimestamp"`
-	DownloadProgress                    float64                               `json:"downloadProgress"`
-	ExecutionProgress                   float64                               `json:"executionProgress"`
-	UploadProgress                      float64                               `json:"uploadProgress"`
-	InstanceCount                       float64                               `json:"instanceCount"`
-	DownloadTime                        string                                `json:"downloadTime"`
-	DownloadTimeSec                     float64                               `json:"downloadTimeSec"`
-	EnvironmentTime                     string                                `json:"environmentTime"`
-	EnvironmentTimeSec                  float64                               `json:"environmentTimeSec"`
-	ExecutionTime                       string                                `json:"executionTime"`
-	ExecutionTimeSec                    float64                               `json:"executionTimeSec"`
-	ExecutionTimeByCPUModel             []ExecutionTimeByCPUModel             `json:"executionTimeByCpuModel"`
-	ExecutionTimeByMachineSpecification []ExecutionTimeByMachineSpecification `json:"executionTimeByMachineSpecification"`
-	ExecutionTimeByInstanceID           []ExecutionTimeByInstanceID           `json:"executionTimeByInstanceId"`
-	ExecutionTimeGhzByCPUModel          []ExecutionTimeGhzByCPUModel          `json:"executionTimeGhzByCpuModel"`
-	UploadTime                          string                                `json:"uploadTime"`
-	UploadTimeSec                       float64                               `json:"uploadTimeSec"`
-	WallTime                            string                                `json:"wallTime"`
-	WallTimeSec                         float64                               `json:"wallTimeSec"`
-	SucceededRange                      string                                `json:"succeededRange"`
-	ExecutedRange                       string                                `json:"executedRange"`
-	FailedRange                         string                                `json:"failedRange"`
-	CancelledRange                      string                                `json:"cancelledRange"`
-	FailedOnlyRange                     string                                `json:"failedOnlyRange"`
-	StartedOnceRange                    string                                `json:"startedOnceRange"`
+	Timestamp                           time.Time                             `json:"timestamp,omitempty"`
+	LastUpdateTimestamp                 time.Time                             `json:"lastUpdateTimestamp,omitempty"`
+	DownloadProgress                    float64                               `json:"downloadProgress,omitempty"`
+	ExecutionProgress                   float64                               `json:"executionProgress,omitempty"`
+	UploadProgress                      float64                               `json:"uploadProgress,omitempty"`
+	InstanceCount                       float64                               `json:"instanceCount,omitempty"`
+	DownloadTime                        string                                `json:"downloadTime,omitempty"`
+	DownloadTimeSec                     float64                               `json:"downloadTimeSec,omitempty"`
+	EnvironmentTime                     string                                `json:"environmentTime,omitempty"`
+	EnvironmentTimeSec                  float64                               `json:"environmentTimeSec,omitempty"`
+	ExecutionTime                       string                                `json:"executionTime,omitempty"`
+	ExecutionTimeSec                    float64                               `json:"executionTimeSec,omitempty"`
+	ExecutionTimeByCPUModel             []ExecutionTimeByCPUModel             `json:"executionTimeByCpuModel,omitempty"`
+	ExecutionTimeByMachineSpecification []ExecutionTimeByMachineSpecification `json:"executionTimeByMachineSpecification,omitempty"`
+	ExecutionTimeByInstanceID           []ExecutionTimeByInstanceID           `json:"executionTimeByInstanceId,omitempty"`
+	ExecutionTimeGhzByCPUModel          []ExecutionTimeGhzByCPUModel          `json:"executionTimeGhzByCpuModel,omitempty"`
+	UploadTime                          string                                `json:"uploadTime,omitempty"`
+	UploadTimeSec                       float64                               `json:"uploadTimeSec,omitempty"`
+	WallTime                            string                                `json:"wallTime,omitempty"`
+	WallTimeSec                         float64                               `json:"wallTimeSec,omitempty"`
+	SucceededRange                      string                                `json:"succeededRange,omitempty"`
+	ExecutedRange                       string                                `json:"executedRange,omitempty"`
+	FailedRange                         string                                `json:"failedRange,omitempty"`
+	CancelledRange                      string                                `json:"cancelledRange,omitempty"`
+	FailedOnlyRange                     string                                `json:"failedOnlyRange,omitempty"`
+	StartedOnceRange                    string                                `json:"startedOnceRange,omitempty"`
 }
 
 // Struct representing a constant for a task
@@ -171,49 +171,49 @@ const (
 
 // Struct representing a task with full details
 type Task struct {
-	Errors                              []QErrorPublic       `json:"errors"`
-	ResourceBuckets                     []string             `json:"resourceBuckets"`
-	AdvancedResourceBuckets             []string             `json:"advancedResourceBuckets"`
-	ResultBucket                        string               `json:"resultBucket"`
-	CompletedInstances                  []CompletedInstance  `json:"completedInstances"`
-	Status                              TaskStatus           `json:"status"`
-	SnapshotInterval                    int                  `json:"snapshotInterval"`
-	ResultsCount                        int                  `json:"resultsCount"`
-	Constants                           []Constant           `json:"constants"`
-	SecretsAccessRights                 SecretsAccessRights  `json:"secretsAccessRights"`
-	Tags                                []string             `json:"tags"`
-	SnapshotWhitelist                   string               `json:"snapshotWhitelist"`
-	SnapshotBlacklist                   string               `json:"snapshotBlacklist"`
-	UploadResultsOnCancellation         bool                 `json:"uploadResultsOnCancellation"`
-	Dependencies                        Dependencies         `json:"dependencies"`
-	AutoDeleteOnCompletion              bool                 `json:"autoDeleteOnCompletion"`
-	CompletionTimeToLive                string               `json:"completionTimeToLive"`
-	HardwareConstraints                 []HardwareConstraint `json:"hardwareConstraints"`
-	Labels                              map[string]string    `json:"labels"`
-	SchedulingType                      SchedulingType       `json:"schedulingType"`
-	Privileges                          Privileges           `json:"privileges"`
-	RetrySettings                       RetrySettings        `json:"retrySettings"`
-	UUID                                string               `json:"uuid"`
-	Name                                string               `json:"name"`
-	Shortname                           string               `json:"shortname"`
-	Profile                             string               `json:"profile"`
-	PoolUUID                            string               `json:"poolUuid"`
-	JobUUID                             string               `json:"jobUuid"`
-	Progress                            float64              `json:"progress"`
-	RunningInstanceCount                int                  `json:"runningInstanceCount"`
-	RunningCoreCount                    int                  `json:"runningCoreCount"`
-	ExecutionTime                       string               `json:"executionTime"`
-	WallTime                            string               `json:"wallTime"`
-	State                               string               `json:"state"`
-	PreviousState                       string               `json:"previousState"`
-	InstanceCount                       int                  `json:"instanceCount"`
-	MaxRetriesPerInstance               int                  `json:"maxRetriesPerInstance"`
-	StateTransitionTime                 time.Time            `json:"stateTransitionTime"`
-	PreviousStateTransitionTime         time.Time            `json:"previousStateTransitionTime"`
-	LastModified                        time.Time            `json:"lastModified"`
-	CreationDate                        time.Time            `json:"creationDate"`
-	EndDate                             time.Time            `json:"endDate"`
-	WaitForPoolResourcesSynchronization bool                 `json:"waitForPoolResourcesSynchronization"`
+	Errors                              []QErrorPublic               `json:"errors,omitempty"`
+	ResourceBuckets                     []string                     `json:"resourceBuckets,omitempty"`
+	AdvancedResourceBuckets             []TaskAdvancedResourceBucket `json:"advancedResourceBuckets,omitempty"`
+	ResultBucket                        string                       `json:"resultBucket,omitempty"`
+	CompletedInstances                  []CompletedInstance          `json:"completedInstances,omitempty"`
+	Status                              TaskStatus                   `json:"status,omitempty"`
+	SnapshotInterval                    int                          `json:"snapshotInterval,omitempty"`
+	ResultsCount                        int                          `json:"resultsCount,omitempty"`
+	Constants                           []Constant                   `json:"constants,omitempty"`
+	SecretsAccessRights                 SecretsAccessRights          `json:"secretsAccessRights,omitempty"`
+	Tags                                []string                     `json:"tags,omitempty"`
+	SnapshotWhitelist                   string                       `json:"snapshotWhitelist,omitempty"`
+	SnapshotBlacklist                   string                       `json:"snapshotBlacklist,omitempty"`
+	UploadResultsOnCancellation         bool                         `json:"uploadResultsOnCancellation,omitempty"`
+	Dependencies                        Dependencies                 `json:"dependencies,omitempty"`
+	AutoDeleteOnCompletion              bool                         `json:"autoDeleteOnCompletion,omitempty"`
+	CompletionTimeToLive                string                       `json:"completionTimeToLive,omitempty"`
+	HardwareConstraints                 []HardwareConstraint         `json:"hardwareConstraints,omitempty"`
+	Labels                              map[string]string            `json:"labels,omitempty"`
+	SchedulingType                      SchedulingType               `json:"schedulingType,omitempty"`
+	Privileges                          Privileges                   `json:"privileges,omitempty"`
+	RetrySettings                       RetrySettings                `json:"retrySettings,omitempty"`
+	UUID                                string                       `json:"uuid,omitempty"`
+	Name                                string                       `json:"name,omitempty"`
+	Shortname                           string                       `json:"shortname,omitempty"`
+	Profile                             string                       `json:"profile,omitempty"`
+	PoolUUID                            string                       `json:"poolUuid,omitempty"`
+	JobUUID                             string                       `json:"jobUuid,omitempty"`
+	Progress                            float64                      `json:"progress,omitempty"`
+	RunningInstanceCount                int                          `json:"runningInstanceCount,omitempty"`
+	RunningCoreCount                    int                          `json:"runningCoreCount,omitempty"`
+	ExecutionTime                       string                       `json:"executionTime,omitempty"`
+	WallTime                            string                       `json:"wallTime,omitempty"`
+	State                               string                       `json:"state,omitempty"`
+	PreviousState                       string                       `json:"previousState,omitempty"`
+	InstanceCount                       int                          `json:"instanceCount,omitempty"`
+	MaxRetriesPerInstance               int                          `json:"maxRetriesPerInstance,omitempty"`
+	StateTransitionTime                 time.Time                    `json:"stateTransitionTime,omitempty"`
+	PreviousStateTransitionTime         time.Time                    `json:"previousStateTransitionTime,omitempty"`
+	LastModified                        time.Time                    `json:"lastModified,omitempty"`
+	CreationDate                        time.Time                    `json:"creationDate,omitempty"`
+	EndDate                             time.Time                    `json:"endDate,omitempty"`
+	WaitForPoolResourcesSynchronization bool                         `json:"waitForPoolResourcesSynchronization,omitempty"`
 }
 
 // Enum for the access constant string
@@ -292,6 +292,7 @@ type TaskSummary struct {
 	State                               string
 	PreviousState                       string
 	InstanceCount                       int
+	MaxRetriesPerInstance               int
 	AdvancedRanges                      string
 	StateTransitionTime                 time.Time
 	PreviousStateTransitionTime         time.Time
@@ -311,22 +312,16 @@ type CreateTaskSnapshotPayload struct {
 	BucketPrefix string `json:"bucketPrefix,omitempty"`
 }
 
-// A struct representing the payload for the `UpdateTask` method
-type UpdateTaskPayload struct {
-	Constants []Constant `json:"constants,omitempty"`
-	Tags      []string   `json:"tags,omitempty"`
-}
-
 // Will list the tasks for the authenticated user
 func (c *Client) ListTasks() ([]Task, error) {
-	data, statusCode, err := c.sendRequest(
+	data, _, err := c.sendRequest(
 		"GET",
 		[]byte{},
 		make(map[string]string),
 		"tasks",
 	)
 	if err != nil {
-		return []Task{}, fmt.Errorf("could not list tasks due to the following error (HTTP %v) : %v", statusCode, err)
+		return []Task{}, fmt.Errorf("could not list tasks due to the following error : %v", err)
 	}
 
 	var tasks []Task
@@ -508,7 +503,7 @@ func (c *Client) GetLastTaskStderr(uuid string) (string, error) {
 }
 
 // Will get the stderr for a task on a specific instance
-func (c *Client) GetInstanceTaskStderr(uuid string, instanceId int) (string, error) {
+func (c *Client) GetTaskInstanceStderr(uuid string, instanceId int) (string, error) {
 	data, _, err := c.sendRequest("GET", []byte{}, nil, fmt.Sprintf("tasks/%v/stderr/%v", uuid, instanceId))
 	if err != nil {
 		return "", fmt.Errorf("could not get task instance stderr due to the following error : %v", err)
@@ -524,7 +519,7 @@ func (c *Client) GetInstanceTaskStderr(uuid string, instanceId int) (string, err
 }
 
 // Will get the previous stderr for a task on a specific instance
-func (c *Client) GetInstanceLastTaskStderr(uuid string, instanceId int) (string, error) {
+func (c *Client) GetLastTaskInstanceStderr(uuid string, instanceId int) (string, error) {
 	data, _, err := c.sendRequest("POST", []byte{}, nil, fmt.Sprintf("tasks/%v/stderr/%v", uuid, instanceId))
 	if err != nil {
 		return "", fmt.Errorf("could not get last task instance stderr due to the following error : %v", err)
@@ -568,9 +563,48 @@ func (c *Client) CreateTaskUniqueSnapshot(uuid string, payload CreateTaskSnapsho
 	return nil
 }
 
+// Struct representing the payload the `RetryTask` method
+// When using it, the field that been filled will be used to update parameters of the task you're retrying from
+// A new task will be created with all the parameters from the old task you're retrying, and the updated settings you've set here
+type RetryTaskPayload struct {
+	Name                                string                       `json:"name,omitempty"`
+	ResourceBuckets                     []string                     `json:"resourceBuckets,omitempty"`
+	AdvancedResourceBuckets             []TaskAdvancedResourceBucket `json:"advancedResourceBuckets,omitempty"`
+	Shortname                           string                       `json:"shortname,omitempty"`
+	Profile                             string                       `json:"profile,omitempty"`
+	JobUuid                             string                       `json:"jobUuid,omitempty"`
+	ResultBucket                        string                       `json:"resultBucket,omitempty"`
+	Constants                           []Constant                   `json:"constants,omitempty"`
+	ForcedConstants                     []ForcedConstant             `json:"forcedConstants,omitempty"`
+	Constraints                         []map[string]string          `json:"constraints,omitempty"`
+	HardwareConstraints                 []HardwareConstraint         `json:"hardwareConstraints,omitempty"`
+	SecretsAccessRights                 SecretsAccessRights          `json:"secretsAccessRights,omitempty"`
+	Tags                                []string                     `json:"tags,omitempty"`
+	SnapshotWhitelist                   string                       `json:"snapshotWhitelist,omitempty"`
+	SnapshotBlacklist                   string                       `json:"snapshotBlacklist,omitempty"`
+	SnapshotBucket                      string                       `json:"snapshotBucket,omitempty"`
+	SnapshotBucketPrefix                string                       `json:"snapshotBucketPrefix,omitempty"`
+	ResultsWhitelist                    string                       `json:"resultsWhitelist,omitempty"`
+	ResultsBlacklist                    string                       `json:"resultsBlacklist,omitempty"`
+	ResultsBucket                       string                       `json:"resultsBucket,omitempty"`
+	ResultsBucketPrefix                 string                       `json:"resultsBucketPrefix,omitempty"`
+	Priority                            int                          `json:"priority,omitempty"`
+	Dependencies                        Dependencies                 `json:"dependencies,omitempty"`
+	AutoDeleteOnCompletion              bool                         `json:"autoDeleteOnCompletion,omitempty"`
+	CompletionTimeToLive                string                       `json:"completionTimeToLive,omitempty"`
+	WaitForPoolResourcesSynchronization bool                         `json:"waitForPoolResourcesSynchronization,omitempty"`
+	UploadResultsOnCancellation         bool                         `json:"uploadResultsOnCancellation,omitempty"`
+	Labels                              []map[string]string          `json:"labels,omitempty"`
+	SchedulingType                      SchedulingType               `json:"schedulingType,omitempty"`
+	TargetedReservedMachineKey          string                       `json:"targetedReservedMachineKey,omitempty"`
+	DefaultResourcesCacheTTLSec         int                          `json:"defaultResourcesCacheTTLSec,omitempty"`
+	Privileges                          Privileges                   `json:"privileges,omitempty"`
+	RetrySettings                       RetrySettings                `json:"retrySettings,omitempty"`
+}
+
 // Will retry a task using the UUID as string, and a `CreateTaskPayload` struct as arguments
 // Return a `UUIDResponse` containing the UUID of the newly retried task
-func (c *Client) RetryTask(uuid string, payload CreateTaskPayload) (UUIDResponse, error) {
+func (c *Client) RetryTask(uuid string, payload RetryTaskPayload) (UUIDResponse, error) {
 	var response UUIDResponse
 
 	payloadJson, err := json.Marshal(payload)
@@ -591,9 +625,48 @@ func (c *Client) RetryTask(uuid string, payload CreateTaskPayload) (UUIDResponse
 	return response, nil
 }
 
+// Struct representing the payload the `RecoverTask` method
+// When using it, the field that been filled will be used to update parameters of the task you're recovering from
+// A new task will be created with all the parameters from the old task you're recovering, and the updated settings you've set here
+type RecoverTaskPayload struct {
+	Name                                string                       `json:"name,omitempty"`
+	ResourceBuckets                     []string                     `json:"resourceBuckets,omitempty"`
+	AdvancedResourceBuckets             []TaskAdvancedResourceBucket `json:"advancedResourceBuckets,omitempty"`
+	Shortname                           string                       `json:"shortname,omitempty"`
+	Profile                             string                       `json:"profile,omitempty"`
+	JobUuid                             string                       `json:"jobUuid,omitempty"`
+	ResultBucket                        string                       `json:"resultBucket,omitempty"`
+	Constants                           []Constant                   `json:"constants,omitempty"`
+	ForcedConstants                     []ForcedConstant             `json:"forcedConstants,omitempty"`
+	Constraints                         []map[string]string          `json:"constraints,omitempty"`
+	HardwareConstraints                 []HardwareConstraint         `json:"hardwareConstraints,omitempty"`
+	SecretsAccessRights                 SecretsAccessRights          `json:"secretsAccessRights,omitempty"`
+	Tags                                []string                     `json:"tags,omitempty"`
+	SnapshotWhitelist                   string                       `json:"snapshotWhitelist,omitempty"`
+	SnapshotBlacklist                   string                       `json:"snapshotBlacklist,omitempty"`
+	SnapshotBucket                      string                       `json:"snapshotBucket,omitempty"`
+	SnapshotBucketPrefix                string                       `json:"snapshotBucketPrefix,omitempty"`
+	ResultsWhitelist                    string                       `json:"resultsWhitelist,omitempty"`
+	ResultsBlacklist                    string                       `json:"resultsBlacklist,omitempty"`
+	ResultsBucket                       string                       `json:"resultsBucket,omitempty"`
+	ResultsBucketPrefix                 string                       `json:"resultsBucketPrefix,omitempty"`
+	Priority                            int                          `json:"priority,omitempty"`
+	Dependencies                        Dependencies                 `json:"dependencies,omitempty"`
+	AutoDeleteOnCompletion              bool                         `json:"autoDeleteOnCompletion,omitempty"`
+	CompletionTimeToLive                string                       `json:"completionTimeToLive,omitempty"`
+	WaitForPoolResourcesSynchronization bool                         `json:"waitForPoolResourcesSynchronization,omitempty"`
+	UploadResultsOnCancellation         bool                         `json:"uploadResultsOnCancellation,omitempty"`
+	Labels                              []map[string]string          `json:"labels,omitempty"`
+	SchedulingType                      SchedulingType               `json:"schedulingType,omitempty"`
+	TargetedReservedMachineKey          string                       `json:"targetedReservedMachineKey,omitempty"`
+	DefaultResourcesCacheTTLSec         int                          `json:"defaultResourcesCacheTTLSec,omitempty"`
+	Privileges                          Privileges                   `json:"privileges,omitempty"`
+	RetrySettings                       RetrySettings                `json:"retrySettings,omitempty"`
+}
+
 // Will recover a task using the UUID as string, and a `CreateTaskPayload` struct as arguments
 // Return a `UUIDResponse` containing the UUID of the newly recovered task
-func (c *Client) RecoverTask(uuid string, payload CreateTaskPayload) (UUIDResponse, error) {
+func (c *Client) RecoverTask(uuid string, payload RecoverTaskPayload) (UUIDResponse, error) {
 	var response UUIDResponse
 
 	payloadJson, err := json.Marshal(payload)
@@ -613,9 +686,48 @@ func (c *Client) RecoverTask(uuid string, payload CreateTaskPayload) (UUIDRespon
 	return response, nil
 }
 
+// Struct representing the payload the `ResumeTask` method
+// When using it, the field that been filled will be used to update parameters of the task you're resuming from
+// A new task will be created with all the parameters from the old task you're resuming, and the updated settings you've set here
+type ResumeTaskPayload struct {
+	Name                                string                       `json:"name,omitempty"`
+	ResourceBuckets                     []string                     `json:"resourceBuckets,omitempty"`
+	AdvancedResourceBuckets             []TaskAdvancedResourceBucket `json:"advancedResourceBuckets,omitempty"`
+	Shortname                           string                       `json:"shortname,omitempty"`
+	Profile                             string                       `json:"profile,omitempty"`
+	JobUuid                             string                       `json:"jobUuid,omitempty"`
+	ResultBucket                        string                       `json:"resultBucket,omitempty"`
+	Constants                           []Constant                   `json:"constants,omitempty"`
+	ForcedConstants                     []ForcedConstant             `json:"forcedConstants,omitempty"`
+	Constraints                         []map[string]string          `json:"constraints,omitempty"`
+	HardwareConstraints                 []HardwareConstraint         `json:"hardwareConstraints,omitempty"`
+	SecretsAccessRights                 SecretsAccessRights          `json:"secretsAccessRights,omitempty"`
+	Tags                                []string                     `json:"tags,omitempty"`
+	SnapshotWhitelist                   string                       `json:"snapshotWhitelist,omitempty"`
+	SnapshotBlacklist                   string                       `json:"snapshotBlacklist,omitempty"`
+	SnapshotBucket                      string                       `json:"snapshotBucket,omitempty"`
+	SnapshotBucketPrefix                string                       `json:"snapshotBucketPrefix,omitempty"`
+	ResultsWhitelist                    string                       `json:"resultsWhitelist,omitempty"`
+	ResultsBlacklist                    string                       `json:"resultsBlacklist,omitempty"`
+	ResultsBucket                       string                       `json:"resultsBucket,omitempty"`
+	ResultsBucketPrefix                 string                       `json:"resultsBucketPrefix,omitempty"`
+	Priority                            int                          `json:"priority,omitempty"`
+	Dependencies                        Dependencies                 `json:"dependencies,omitempty"`
+	AutoDeleteOnCompletion              bool                         `json:"autoDeleteOnCompletion,omitempty"`
+	CompletionTimeToLive                string                       `json:"completionTimeToLive,omitempty"`
+	WaitForPoolResourcesSynchronization bool                         `json:"waitForPoolResourcesSynchronization,omitempty"`
+	UploadResultsOnCancellation         bool                         `json:"uploadResultsOnCancellation,omitempty"`
+	Labels                              []map[string]string          `json:"labels,omitempty"`
+	SchedulingType                      SchedulingType               `json:"schedulingType,omitempty"`
+	TargetedReservedMachineKey          string                       `json:"targetedReservedMachineKey,omitempty"`
+	DefaultResourcesCacheTTLSec         int                          `json:"defaultResourcesCacheTTLSec,omitempty"`
+	Privileges                          Privileges                   `json:"privileges,omitempty"`
+	RetrySettings                       RetrySettings                `json:"retrySettings,omitempty"`
+}
+
 // Will resume a task using the UUID as string, and a `CreateTaskPayload` struct as arguments
 // Return a `UUIDResponse` containing the UUID of the newly resumed task
-func (c *Client) ResumeTask(uuid string, payload CreateTaskPayload) (UUIDResponse, error) {
+func (c *Client) ResumeTask(uuid string, payload ResumeTaskPayload) (UUIDResponse, error) {
 	var response UUIDResponse
 
 	payloadJson, err := json.Marshal(payload)
@@ -636,9 +748,48 @@ func (c *Client) ResumeTask(uuid string, payload CreateTaskPayload) (UUIDRespons
 	return response, nil
 }
 
+// Struct representing the payload the `ResumeTask` method
+// When using it, the field that been filled will be used to update parameters of the task you're cloning from
+// A new task will be created with all the parameters from the old task you're cloning, and the updated settings you've set here
+type CloneTaskPayload struct {
+	Name                                string                       `json:"name,omitempty"`
+	ResourceBuckets                     []string                     `json:"resourceBuckets,omitempty"`
+	AdvancedResourceBuckets             []TaskAdvancedResourceBucket `json:"advancedResourceBuckets,omitempty"`
+	Shortname                           string                       `json:"shortname,omitempty"`
+	Profile                             string                       `json:"profile,omitempty"`
+	JobUuid                             string                       `json:"jobUuid,omitempty"`
+	ResultBucket                        string                       `json:"resultBucket,omitempty"`
+	Constants                           []Constant                   `json:"constants,omitempty"`
+	ForcedConstants                     []ForcedConstant             `json:"forcedConstants,omitempty"`
+	Constraints                         []map[string]string          `json:"constraints,omitempty"`
+	HardwareConstraints                 []HardwareConstraint         `json:"hardwareConstraints,omitempty"`
+	SecretsAccessRights                 SecretsAccessRights          `json:"secretsAccessRights,omitempty"`
+	Tags                                []string                     `json:"tags,omitempty"`
+	SnapshotWhitelist                   string                       `json:"snapshotWhitelist,omitempty"`
+	SnapshotBlacklist                   string                       `json:"snapshotBlacklist,omitempty"`
+	SnapshotBucket                      string                       `json:"snapshotBucket,omitempty"`
+	SnapshotBucketPrefix                string                       `json:"snapshotBucketPrefix,omitempty"`
+	ResultsWhitelist                    string                       `json:"resultsWhitelist,omitempty"`
+	ResultsBlacklist                    string                       `json:"resultsBlacklist,omitempty"`
+	ResultsBucket                       string                       `json:"resultsBucket,omitempty"`
+	ResultsBucketPrefix                 string                       `json:"resultsBucketPrefix,omitempty"`
+	Priority                            int                          `json:"priority,omitempty"`
+	Dependencies                        Dependencies                 `json:"dependencies,omitempty"`
+	AutoDeleteOnCompletion              bool                         `json:"autoDeleteOnCompletion,omitempty"`
+	CompletionTimeToLive                string                       `json:"completionTimeToLive,omitempty"`
+	WaitForPoolResourcesSynchronization bool                         `json:"waitForPoolResourcesSynchronization,omitempty"`
+	UploadResultsOnCancellation         bool                         `json:"uploadResultsOnCancellation,omitempty"`
+	Labels                              []map[string]string          `json:"labels,omitempty"`
+	SchedulingType                      SchedulingType               `json:"schedulingType,omitempty"`
+	TargetedReservedMachineKey          string                       `json:"targetedReservedMachineKey,omitempty"`
+	DefaultResourcesCacheTTLSec         int                          `json:"defaultResourcesCacheTTLSec,omitempty"`
+	Privileges                          Privileges                   `json:"privileges,omitempty"`
+	RetrySettings                       RetrySettings                `json:"retrySettings,omitempty"`
+}
+
 // Will clone a task using the UUID as string, and a `CreateTaskPayload` struct as arguments
 // Return a `UUIDResponse` containing the UUID of the newly cloned task
-func (c *Client) CloneTask(uuid string, payload CreateTaskPayload) (UUIDResponse, error) {
+func (c *Client) CloneTask(uuid string, payload CloneTaskPayload) (UUIDResponse, error) {
 	var response UUIDResponse
 
 	payloadJson, err := json.Marshal(payload)
@@ -658,6 +809,12 @@ func (c *Client) CloneTask(uuid string, payload CreateTaskPayload) (UUIDResponse
 	return response, nil
 }
 
+// A struct representing the payload for the `UpdateTask` method
+type UpdateTaskPayload struct {
+	Constants []Constant `json:"constants,omitempty"`
+	Tags      []string   `json:"tags,omitempty"`
+}
+
 // Will update the fields of a task using the UUID as an argument, as well as a `UpdateTaskPayload` struct
 func (c *Client) UpdateTask(uuid string, payload UpdateTaskPayload) error {
 	payloadJson, err := json.Marshal(payload)
@@ -668,15 +825,6 @@ func (c *Client) UpdateTask(uuid string, payload UpdateTaskPayload) error {
 	_, _, err = c.sendRequest("PUT", payloadJson, nil, fmt.Sprintf("tasks/%v", uuid))
 	if err != nil {
 		return fmt.Errorf("could not update task due to the following error : %v", err)
-	}
-
-	return nil
-}
-
-func (c *Client) UpdateTaskResources(uuid string) error {
-	_, _, err := c.sendRequest("PATCH", []byte{}, nil, fmt.Sprintf("tasks/%v", uuid))
-	if err != nil {
-		return fmt.Errorf("could not update task resources due to the following error : %v", err)
 	}
 
 	return nil
