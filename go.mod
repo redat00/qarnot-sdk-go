@@ -7,6 +7,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.27.2
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.2
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.50.3
+	github.com/r3labs/diff v1.1.0
 )
 
 require (
@@ -24,6 +25,4 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.22.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.27.2 // indirect
 	github.com/aws/smithy-go v1.20.1 // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/r3labs/diff v1.1.0 // indirect
 )

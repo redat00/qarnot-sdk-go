@@ -8,7 +8,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/r3labs/diff"
 )
 
@@ -351,8 +350,6 @@ func TestListTasksOK(t *testing.T) {
 			fmt.Println(changelog[i].To)
 			fmt.Println("---")
 		}
-		spew.Dump(tasks)
-		spew.Dump(expectedData)
 	}
 }
 
