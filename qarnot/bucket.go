@@ -104,7 +104,7 @@ type ObjectToUpload struct {
 }
 
 // Upload objects in bucket
-func (c *Client) UploadObject(object ObjectToUpload) error {
+func (c *Client) UploadObject(object *ObjectToUpload) error {
 	body, err := os.Open(object.LocalPath)
 	if err != nil {
 		return fmt.Errorf("could not upload object to bucket due to the following error : %v", err)
