@@ -1,5 +1,7 @@
 # Qarnot Computing Go SDK
 
+![CI](https://github.com/redat00/qarnot-sdk-go/actions/workflows/go.yml/badge.svg)
+
 This Go library allows you to create jobs, tasks and buckets onto the Qarnot API.
 
 1. [Installation](#installation)
