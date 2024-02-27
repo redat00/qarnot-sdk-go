@@ -49,6 +49,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+}
 ```
 ### Create a task
 
@@ -141,6 +142,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+}
 ```
 
 ## Status of the project
