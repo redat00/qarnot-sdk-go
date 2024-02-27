@@ -302,16 +302,6 @@ type TaskSummary struct {
 	WaitForPoolResourcesSynchronization bool
 }
 
-// Struct representing the payload for creating unique and periodic snapshot
-// Interval should only be filled for periodic snapshot, otherwise it will just get ignored
-type CreateTaskSnapshotPayload struct {
-	Interval     int    `json:"interval,omitempty"`
-	Whitelist    string `json:"whitelist,omitempty"`
-	Blacklist    string `json:"blacklist,omitempty"`
-	Bucket       string `json:"bucket,omitempty"`
-	BucketPrefix string `json:"bucketPrefix,omitempty"`
-}
-
 // Will list the tasks for the authenticated user
 func (c *Client) ListTasks() ([]Task, error) {
 	data, _, err := c.sendRequest(
@@ -351,7 +341,7 @@ func (c *Client) GetTaskInfo(uuid string) (Task, error) {
 
 // Will create a task, based on a `CreateTaskPayload`
 // Returns a `UUIDResponse` struct, containing a UUID for the newly created task
-func (c *Client) CreateTask(payload CreateTaskPayload) (UUIDResponse, error) {
+func (c *Client) CreateTask(payload *CreateTaskPayload) (UUIDResponse, error) {
 	var response UUIDResponse
 
 	payloadJson, err := json.Marshal(payload)
@@ -534,14 +524,24 @@ func (c *Client) GetLastTaskInstanceStderr(uuid string, instanceId int) (string,
 	return stderr, nil
 }
 
+// Struct representing the payload for creating unique and periodic snapshot
+// Interval should only be filled for periodic snapshot, otherwise it will just get ignored
+type CreateTaskSnapshotPayload struct {
+	Interval     int    `json:"interval,omitempty"`
+	Whitelist    string `json:"whitelist,omitempty"`
+	Blacklist    string `json:"blacklist,omitempty"`
+	Bucket       string `json:"bucket,omitempty"`
+	BucketPrefix string `json:"bucketPrefix,omitempty"`
+}
+
 // Will create a periodic snapshot for a task using the UUID as string and a `CreateTaskSnapshotPayload` struct as arguments
-func (c *Client) CreateTaskPeriodicSnapshot(uuid string, payload CreateTaskSnapshotPayload) error {
-	payloadJson, err := json.Marshal(payload)
+func (c *Client) CreateTaskPeriodicSnapshot(uuid string, payload *CreateTaskSnapshotPayload) error {
+	payloadJson, err := json.Marshal(&payload)
 	if err != nil {
 		return helpers.FormatJsonMarshalError(err)
 	}
-	_, _, err = c.sendRequest("POST", payloadJson, nil, fmt.Sprintf("tasks/%v/snapshot/periodic", uuid))
-	if err != nil {
+
+	if _, _, err = c.sendRequest("POST", payloadJson, nil, fmt.Sprintf("tasks/%v/snapshot/periodic", uuid)); err != nil {
 		return fmt.Errorf("could not create a task periodic snapshot due to the following error : %v", err)
 	}
 
@@ -549,8 +549,8 @@ func (c *Client) CreateTaskPeriodicSnapshot(uuid string, payload CreateTaskSnaps
 }
 
 // Will create a unique snapshot for a task using the UUID as string and a `CreateTaskSnapshotPayload` struct as arguments
-func (c *Client) CreateTaskUniqueSnapshot(uuid string, payload CreateTaskSnapshotPayload) error {
-	payloadJson, err := json.Marshal(payload)
+func (c *Client) CreateTaskUniqueSnapshot(uuid string, payload *CreateTaskSnapshotPayload) error {
+	payloadJson, err := json.Marshal(&payload)
 	if err != nil {
 		return helpers.FormatJsonMarshalError(err)
 	}
@@ -604,7 +604,7 @@ type RetryTaskPayload struct {
 
 // Will retry a task using the UUID as string, and a `CreateTaskPayload` struct as arguments
 // Return a `UUIDResponse` containing the UUID of the newly retried task
-func (c *Client) RetryTask(uuid string, payload RetryTaskPayload) (UUIDResponse, error) {
+func (c *Client) RetryTask(uuid string, payload *RetryTaskPayload) (UUIDResponse, error) {
 	var response UUIDResponse
 
 	payloadJson, err := json.Marshal(payload)
@@ -666,10 +666,10 @@ type RecoverTaskPayload struct {
 
 // Will recover a task using the UUID as string, and a `CreateTaskPayload` struct as arguments
 // Return a `UUIDResponse` containing the UUID of the newly recovered task
-func (c *Client) RecoverTask(uuid string, payload RecoverTaskPayload) (UUIDResponse, error) {
+func (c *Client) RecoverTask(uuid string, payload *RecoverTaskPayload) (UUIDResponse, error) {
 	var response UUIDResponse
 
-	payloadJson, err := json.Marshal(payload)
+	payloadJson, err := json.Marshal(&payload)
 	if err != nil {
 		return response, helpers.FormatJsonMarshalError(err)
 	}
@@ -727,10 +727,10 @@ type ResumeTaskPayload struct {
 
 // Will resume a task using the UUID as string, and a `CreateTaskPayload` struct as arguments
 // Return a `UUIDResponse` containing the UUID of the newly resumed task
-func (c *Client) ResumeTask(uuid string, payload ResumeTaskPayload) (UUIDResponse, error) {
+func (c *Client) ResumeTask(uuid string, payload *ResumeTaskPayload) (UUIDResponse, error) {
 	var response UUIDResponse
 
-	payloadJson, err := json.Marshal(payload)
+	payloadJson, err := json.Marshal(&payload)
 	if err != nil {
 		return response, helpers.FormatJsonMarshalError(err)
 	}
@@ -789,10 +789,10 @@ type CloneTaskPayload struct {
 
 // Will clone a task using the UUID as string, and a `CreateTaskPayload` struct as arguments
 // Return a `UUIDResponse` containing the UUID of the newly cloned task
-func (c *Client) CloneTask(uuid string, payload CloneTaskPayload) (UUIDResponse, error) {
+func (c *Client) CloneTask(uuid string, payload *CloneTaskPayload) (UUIDResponse, error) {
 	var response UUIDResponse
 
-	payloadJson, err := json.Marshal(payload)
+	payloadJson, err := json.Marshal(&payload)
 	if err != nil {
 		return response, helpers.FormatJsonMarshalError(err)
 	}

@@ -1378,3 +1378,485 @@ func TestListTaskSummaries(t *testing.T) {
 		t.Errorf("found    : %v", err.Error())
 	}
 }
+
+func TestCreateTaskPeriodicSnapshot(t *testing.T) {
+	expectedNotFound := `{
+		"message": "No such task: notfoundtask"
+	  }`
+
+	expectedInvalidPayload := `{
+		"errors": {
+		  "interval": [
+			"Could not convert string to integer: test. Path 'interval', line 1, position 19."
+		  ]
+		},
+		"type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+		"title": "One or more validation errors occurred.",
+		"status": 400,
+		"detail": null,
+		"instance": null,
+		"extensions": {
+		  "traceId": "xxx"
+		}
+	  }`
+
+	srv := httptest.NewServer(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path == "/v1/tasks/oktask/snapshot/periodic" {
+				fmt.Fprint(w, nil)
+			} else if r.URL.Path == "/v1/tasks/notfoundtask/snapshot/periodic" {
+				w.WriteHeader(404)
+				fmt.Fprint(w, expectedNotFound)
+			} else if r.URL.Path == "/v1/tasks/invalidpayloadtask/snapshot/periodic" {
+				w.WriteHeader(400)
+				fmt.Fprint(w, expectedInvalidPayload)
+			}
+		}),
+	)
+	defer srv.Close()
+
+	qarnotConfig := QarnotConfig{
+		ApiUrl:     srv.URL,
+		ApiKey:     "xxx",
+		Email:      "test@example.org",
+		Version:    "v1",
+		StorageUrl: "http://fake.storage.qarnope.com",
+	}
+
+	client, err := NewClient(&qarnotConfig)
+	if err != nil {
+		t.Errorf("could not create a new client: %v", err)
+	}
+
+	err = client.CreateTaskPeriodicSnapshot("oktask", &CreateTaskSnapshotPayload{
+		Interval: 10,
+	})
+	if err != nil {
+		t.Errorf("err should be equal to nil: %v", err)
+	}
+
+	expectedErrorString := "could not create a task periodic snapshot due to the following error : [HTTP 404] No such task: notfoundtask"
+	err = client.CreateTaskPeriodicSnapshot("notfoundtask", &CreateTaskSnapshotPayload{
+		Interval: 10,
+	})
+	if err.Error() != expectedErrorString {
+		t.Error("different values.")
+		t.Errorf("expected : %v", expectedErrorString)
+		t.Errorf("found    : %v", err.Error())
+	}
+
+	expectedErrorString = "could not create a task periodic snapshot due to the following error : [HTTP 400] map[interval:[Could not convert string to integer: test. Path 'interval', line 1, position 19.]]"
+	err = client.CreateTaskPeriodicSnapshot("invalidpayloadtask", &CreateTaskSnapshotPayload{
+		Interval: 10,
+	})
+	if err.Error() != expectedErrorString {
+		t.Error("different values.")
+		t.Errorf("expected : %v", expectedErrorString)
+		t.Errorf("found    : %v", err.Error())
+	}
+}
+
+func TestCreateTaskUniqueSnapshot(t *testing.T) {
+	expectedNotFound := `{
+		"message": "No such task: notfoundtask"
+	  }`
+
+	expectedInvalidPayload := `{
+		"errors": {
+		  "interval": [
+			"Could not convert string to integer: test. Path 'interval', line 1, position 19."
+		  ]
+		},
+		"type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+		"title": "One or more validation errors occurred.",
+		"status": 400,
+		"detail": null,
+		"instance": null,
+		"extensions": {
+		  "traceId": "xxx"
+		}
+	  }`
+
+	srv := httptest.NewServer(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path == "/v1/tasks/oktask/snapshot" {
+				fmt.Fprint(w, nil)
+			} else if r.URL.Path == "/v1/tasks/notfoundtask/snapshot" {
+				w.WriteHeader(404)
+				fmt.Fprint(w, expectedNotFound)
+			} else if r.URL.Path == "/v1/tasks/invalidpayloadtask/snapshot" {
+				w.WriteHeader(400)
+				fmt.Fprint(w, expectedInvalidPayload)
+			}
+		}),
+	)
+	defer srv.Close()
+
+	qarnotConfig := QarnotConfig{
+		ApiUrl:     srv.URL,
+		ApiKey:     "xxx",
+		Email:      "test@example.org",
+		Version:    "v1",
+		StorageUrl: "http://fake.storage.qarnope.com",
+	}
+
+	client, err := NewClient(&qarnotConfig)
+	if err != nil {
+		t.Errorf("could not create a new client: %v", err)
+	}
+
+	err = client.CreateTaskUniqueSnapshot("oktask", &CreateTaskSnapshotPayload{
+		Interval: 10,
+	})
+	if err != nil {
+		t.Errorf("err should be equal to nil: %v", err)
+	}
+
+	expectedErrorString := "could not create a task unique snapshot due to the following error : [HTTP 404] No such task: notfoundtask"
+	err = client.CreateTaskUniqueSnapshot("notfoundtask", &CreateTaskSnapshotPayload{
+		Interval: 10,
+	})
+	if err.Error() != expectedErrorString {
+		t.Error("different values.")
+		t.Errorf("expected : %v", expectedErrorString)
+		t.Errorf("found    : %v", err.Error())
+	}
+
+	expectedErrorString = "could not create a task unique snapshot due to the following error : [HTTP 400] map[interval:[Could not convert string to integer: test. Path 'interval', line 1, position 19.]]"
+	err = client.CreateTaskUniqueSnapshot("invalidpayloadtask", &CreateTaskSnapshotPayload{
+		Interval: 10,
+	})
+	if err.Error() != expectedErrorString {
+		t.Error("different values.")
+		t.Errorf("expected : %v", expectedErrorString)
+		t.Errorf("found    : %v", err.Error())
+	}
+}
+
+func TestRetryTask(t *testing.T) {
+	expectedOk := `{
+		"uuid": "fakeuuid"
+	}`
+
+	expectedNotFound := `{
+		"message": "No such task: notfoundtask"
+	  }`
+
+	expectedInvalidPayload := `{
+		"errors": {
+		  "": [
+			"A non-empty request body is required."
+		  ]
+		},
+		"type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+		"title": "One or more validation errors occurred.",
+		"status": 400,
+		"detail": null,
+		"instance": null,
+		"extensions": {
+		  "traceId": "00-a262138981ea711ace26bbc03d99fd02-425a067b647884a7-01"
+		}
+	  }`
+
+	srv := httptest.NewServer(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path == "/v1/tasks/oktask/retry" && r.Method == "POST" {
+				fmt.Fprint(w, expectedOk)
+			} else if r.URL.Path == "/v1/tasks/notfoundtask/retry" && r.Method == "POST" {
+				w.WriteHeader(404)
+				fmt.Fprint(w, expectedNotFound)
+			} else if r.URL.Path == "/v1/tasks/invalidpayloadtask/retry" && r.Method == "POST" {
+				w.WriteHeader(400)
+				fmt.Fprint(w, expectedInvalidPayload)
+			}
+		}),
+	)
+	defer srv.Close()
+
+	qarnotConfig := QarnotConfig{
+		ApiUrl:     srv.URL,
+		ApiKey:     "xxx",
+		Email:      "test@example.org",
+		Version:    "v1",
+		StorageUrl: "http://fake.storage.qarnope.com",
+	}
+
+	client, err := NewClient(&qarnotConfig)
+	if err != nil {
+		t.Errorf("could not create a new client: %v", err)
+	}
+
+	uuid, err := client.RetryTask("oktask", &RetryTaskPayload{})
+	if err != nil {
+		t.Errorf("err should be equal to nil: %v", err)
+	}
+
+	testUuid := UUIDResponse{Uuid: "fakeuuid"}
+	if testUuid != uuid {
+		t.Error("different values.")
+		t.Errorf("expected : %v", testUuid)
+		t.Errorf("found    : %v", uuid)
+	}
+
+	expectedErrorString := "could not retry task due to the following error : [HTTP 404] No such task: notfoundtask"
+	_, err = client.RetryTask("notfoundtask", &RetryTaskPayload{})
+	if err.Error() != expectedErrorString {
+		t.Error("different values.")
+		t.Errorf("expected : %v", expectedErrorString)
+		t.Errorf("found    : %v", err.Error())
+	}
+
+	expectedErrorString = "could not retry task due to the following error : [HTTP 400] map[:[A non-empty request body is required.]]"
+	_, err = client.RetryTask("invalidpayloadtask", &RetryTaskPayload{})
+	if err.Error() != expectedErrorString {
+		t.Error("different values.")
+		t.Errorf("expected : %v", expectedErrorString)
+		t.Errorf("found    : %v", err.Error())
+	}
+}
+
+func TestRecoverTask(t *testing.T) {
+	expectedOk := `{
+		"uuid": "fakeuuid"
+	}`
+
+	expectedNotFound := `{
+		"message": "No such task: notfoundtask"
+	  }`
+
+	expectedInvalidPayload := `{
+		"errors": {
+		  "": [
+			"A non-empty request body is required."
+		  ]
+		},
+		"type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+		"title": "One or more validation errors occurred.",
+		"status": 400,
+		"detail": null,
+		"instance": null,
+		"extensions": {
+		  "traceId": "00-a262138981ea711ace26bbc03d99fd02-425a067b647884a7-01"
+		}
+	  }`
+
+	srv := httptest.NewServer(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path == "/v1/tasks/oktask/recover" && r.Method == "POST" {
+				fmt.Fprint(w, expectedOk)
+			} else if r.URL.Path == "/v1/tasks/notfoundtask/recover" && r.Method == "POST" {
+				w.WriteHeader(404)
+				fmt.Fprint(w, expectedNotFound)
+			} else if r.URL.Path == "/v1/tasks/invalidpayloadtask/recover" && r.Method == "POST" {
+				w.WriteHeader(400)
+				fmt.Fprint(w, expectedInvalidPayload)
+			}
+		}),
+	)
+	defer srv.Close()
+
+	qarnotConfig := QarnotConfig{
+		ApiUrl:     srv.URL,
+		ApiKey:     "xxx",
+		Email:      "test@example.org",
+		Version:    "v1",
+		StorageUrl: "http://fake.storage.qarnope.com",
+	}
+
+	client, err := NewClient(&qarnotConfig)
+	if err != nil {
+		t.Errorf("could not create a new client: %v", err)
+	}
+
+	uuid, err := client.RecoverTask("oktask", &RecoverTaskPayload{})
+	if err != nil {
+		t.Errorf("err should be equal to nil: %v", err)
+	}
+
+	testUuid := UUIDResponse{Uuid: "fakeuuid"}
+	if testUuid != uuid {
+		t.Error("different values.")
+		t.Errorf("expected : %v", testUuid)
+		t.Errorf("found    : %v", uuid)
+	}
+
+	expectedErrorString := "could not recover task due to the following error : [HTTP 404] No such task: notfoundtask"
+	_, err = client.RecoverTask("notfoundtask", &RecoverTaskPayload{})
+	if err.Error() != expectedErrorString {
+		t.Error("different values.")
+		t.Errorf("expected : %v", expectedErrorString)
+		t.Errorf("found    : %v", err.Error())
+	}
+
+	expectedErrorString = "could not recover task due to the following error : [HTTP 400] map[:[A non-empty request body is required.]]"
+	_, err = client.RecoverTask("invalidpayloadtask", &RecoverTaskPayload{})
+	if err.Error() != expectedErrorString {
+		t.Error("different values.")
+		t.Errorf("expected : %v", expectedErrorString)
+		t.Errorf("found    : %v", err.Error())
+	}
+}
+
+func TestResumeTask(t *testing.T) {
+	expectedOk := `{
+		"uuid": "fakeuuid"
+	}`
+
+	expectedNotFound := `{
+		"message": "No such task: notfoundtask"
+	  }`
+
+	expectedInvalidPayload := `{
+		"errors": {
+		  "": [
+			"A non-empty request body is required."
+		  ]
+		},
+		"type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+		"title": "One or more validation errors occurred.",
+		"status": 400,
+		"detail": null,
+		"instance": null,
+		"extensions": {
+		  "traceId": "00-a262138981ea711ace26bbc03d99fd02-425a067b647884a7-01"
+		}
+	  }`
+
+	srv := httptest.NewServer(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path == "/v1/tasks/oktask/resume" && r.Method == "POST" {
+				fmt.Fprint(w, expectedOk)
+			} else if r.URL.Path == "/v1/tasks/notfoundtask/resume" && r.Method == "POST" {
+				w.WriteHeader(404)
+				fmt.Fprint(w, expectedNotFound)
+			} else if r.URL.Path == "/v1/tasks/invalidpayloadtask/resume" && r.Method == "POST" {
+				w.WriteHeader(400)
+				fmt.Fprint(w, expectedInvalidPayload)
+			}
+		}),
+	)
+	defer srv.Close()
+
+	qarnotConfig := QarnotConfig{
+		ApiUrl:     srv.URL,
+		ApiKey:     "xxx",
+		Email:      "test@example.org",
+		Version:    "v1",
+		StorageUrl: "http://fake.storage.qarnope.com",
+	}
+
+	client, err := NewClient(&qarnotConfig)
+	if err != nil {
+		t.Errorf("could not create a new client: %v", err)
+	}
+
+	uuid, err := client.ResumeTask("oktask", &ResumeTaskPayload{})
+	if err != nil {
+		t.Errorf("err should be equal to nil: %v", err)
+	}
+
+	testUuid := UUIDResponse{Uuid: "fakeuuid"}
+	if testUuid != uuid {
+		t.Error("different values.")
+		t.Errorf("expected : %v", testUuid)
+		t.Errorf("found    : %v", uuid)
+	}
+
+	expectedErrorString := "could not resume task due to the following error : [HTTP 404] No such task: notfoundtask"
+	_, err = client.ResumeTask("notfoundtask", &ResumeTaskPayload{})
+	if err.Error() != expectedErrorString {
+		t.Error("different values.")
+		t.Errorf("expected : %v", expectedErrorString)
+		t.Errorf("found    : %v", err.Error())
+	}
+
+	expectedErrorString = "could not resume task due to the following error : [HTTP 400] map[:[A non-empty request body is required.]]"
+	_, err = client.ResumeTask("invalidpayloadtask", &ResumeTaskPayload{})
+	if err.Error() != expectedErrorString {
+		t.Error("different values.")
+		t.Errorf("expected : %v", expectedErrorString)
+		t.Errorf("found    : %v", err.Error())
+	}
+}
+
+func TestCloneTask(t *testing.T) {
+	expectedOk := `{
+		"uuid": "fakeuuid"
+	}`
+
+	expectedNotFound := `{
+		"message": "No such task: notfoundtask"
+	  }`
+
+	expectedInvalidPayload := `{
+		"errors": {
+		  "": [
+			"A non-empty request body is required."
+		  ]
+		},
+		"type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+		"title": "One or more validation errors occurred.",
+		"status": 400,
+		"detail": null,
+		"instance": null,
+		"extensions": {
+		  "traceId": "00-a262138981ea711ace26bbc03d99fd02-425a067b647884a7-01"
+		}
+	  }`
+
+	srv := httptest.NewServer(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path == "/v1/tasks/oktask/clone" && r.Method == "POST" {
+				fmt.Fprint(w, expectedOk)
+			} else if r.URL.Path == "/v1/tasks/notfoundtask/clone" && r.Method == "POST" {
+				w.WriteHeader(404)
+				fmt.Fprint(w, expectedNotFound)
+			} else if r.URL.Path == "/v1/tasks/invalidpayloadtask/clone" && r.Method == "POST" {
+				w.WriteHeader(400)
+				fmt.Fprint(w, expectedInvalidPayload)
+			}
+		}),
+	)
+	defer srv.Close()
+
+	qarnotConfig := QarnotConfig{
+		ApiUrl:     srv.URL,
+		ApiKey:     "xxx",
+		Email:      "test@example.org",
+		Version:    "v1",
+		StorageUrl: "http://fake.storage.qarnope.com",
+	}
+
+	client, err := NewClient(&qarnotConfig)
+	if err != nil {
+		t.Errorf("could not create a new client: %v", err)
+	}
+
+	uuid, err := client.CloneTask("oktask", &CloneTaskPayload{})
+	if err != nil {
+		t.Errorf("err should be equal to nil: %v", err)
+	}
+
+	testUuid := UUIDResponse{Uuid: "fakeuuid"}
+	if testUuid != uuid {
+		t.Error("different values.")
+		t.Errorf("expected : %v", testUuid)
+		t.Errorf("found    : %v", uuid)
+	}
+
+	expectedErrorString := "could not clone task due to the following error : [HTTP 404] No such task: notfoundtask"
+	_, err = client.CloneTask("notfoundtask", &CloneTaskPayload{})
+	if err.Error() != expectedErrorString {
+		t.Error("different values.")
+		t.Errorf("expected : %v", expectedErrorString)
+		t.Errorf("found    : %v", err.Error())
+	}
+
+	expectedErrorString = "could not clone task due to the following error : [HTTP 400] map[:[A non-empty request body is required.]]"
+	_, err = client.CloneTask("invalidpayloadtask", &CloneTaskPayload{})
+	if err.Error() != expectedErrorString {
+		t.Error("different values.")
+		t.Errorf("expected : %v", expectedErrorString)
+		t.Errorf("found    : %v", err.Error())
+	}
+}

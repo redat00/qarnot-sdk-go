@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -16,22 +17,67 @@ import (
 	"github.com/redat00/qarnot-sdk-go/internal/helpers"
 )
 
-type subErrorResponse struct {
-	Message string `json:"message"`
-	Code    int    `json:"code"`
-}
-
-type errorResponse struct {
-	Message string           `json:"message,omitempty"`
-	Error   subErrorResponse `json:"error,omitempty"`
-}
-
 type Client struct {
 	httpClient *http.Client
 	url        string
 	apiKey     string
 	version    string
 	s3         *s3.Client
+}
+
+// Since the API is not returning consistent errors, we create
+// different struct to accomodate them all. If you want more
+// information about it, you can check the Github issue :
+// https://github.com/redat00/qarnot-sdk-go/issues/7
+
+type firstErrorType struct {
+	Message string `json:"message"`
+}
+
+func (e *firstErrorType) getErrorString() string {
+	return e.Message
+}
+
+type secondErrorType struct {
+	Error firstErrorType `json:"error"`
+}
+
+func (e *secondErrorType) getErrorString() string {
+	return e.Error.Message
+}
+
+type thirdErrorType struct {
+	Errors map[string][]string `json:"errors"`
+}
+
+func (e *thirdErrorType) getErrorString() string {
+	return fmt.Sprintf("%v", e.Errors)
+}
+
+func getErrorStringFromBody(rawMsg []byte) (string, error) {
+	var errorString string
+
+	if strings.Contains(string(rawMsg), `"errors": {`) {
+		var actualError thirdErrorType
+		if err := json.Unmarshal(rawMsg, &actualError); err != nil {
+			return "", helpers.FormatJsonUnmarshalError(err)
+		}
+		errorString = actualError.getErrorString()
+	} else if strings.Contains(string(rawMsg), `"error":{`) {
+		var actualError secondErrorType
+		if err := json.Unmarshal(rawMsg, &actualError); err != nil {
+			return "", helpers.FormatJsonUnmarshalError(err)
+		}
+		errorString = actualError.getErrorString()
+	} else {
+		var actualError firstErrorType
+		if err := json.Unmarshal(rawMsg, &actualError); err != nil {
+			return "", helpers.FormatJsonUnmarshalError(err)
+		}
+		errorString = actualError.getErrorString()
+	}
+
+	return errorString, nil
 }
 
 func (c *Client) sendRequest(method string, payload []byte, headers map[string]string, endpoint string) ([]byte, int, error) {
@@ -71,20 +117,17 @@ func (c *Client) sendRequest(method string, payload []byte, headers map[string]s
 
 	// Check that the request did not fail
 	if resp.StatusCode >= 400 {
-		var reqError errorResponse
-		err := json.Unmarshal(body, &reqError)
-		if err != nil {
+		var rawMsg json.RawMessage
+		if err := json.Unmarshal([]byte(body), &rawMsg); err != nil {
 			return []byte{}, 0, helpers.FormatJsonUnmarshalError(err)
 		}
 
-		var message string
-		if reqError.Message != "" {
-			message = reqError.Message
-		} else {
-			message = reqError.Error.Message
+		errorString, err := getErrorStringFromBody(rawMsg)
+		if err != nil {
+			panic(err)
 		}
 
-		return []byte{}, resp.StatusCode, fmt.Errorf("[HTTP %v] %v", resp.StatusCode, message)
+		return []byte{}, resp.StatusCode, fmt.Errorf("[HTTP %v] %v", resp.StatusCode, errorString)
 	}
 
 	// Return the response
