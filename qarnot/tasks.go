@@ -49,6 +49,66 @@ type ExecutionTimeGhzByCPUModel struct {
 	Core       int     `json:"core"`
 }
 
+// Struct representing an active formward settings
+type ActiveForward struct {
+	ApplicationPort int    `json:"applicationPort"`
+	ForwarderPort   int    `json:"forwarderPort"`
+	ForwarderHost   string `json:"forwarderHost"`
+	BindAddress     string `json:"bindAddress"`
+}
+
+// Struct representing a VPN Connection
+type VpnConnection struct {
+	VpnName           string `json:"vpnName"`
+	NodeIPAddressCidr string `json:"nodeIPAddressCidr"`
+}
+
+type PerRunningInstanceInfo struct {
+	ActiveForwards        []ActiveForward `json:"activeForwards"`
+	VpnConnections        []VpnConnection `json:"vpnConnections"`
+	Phase                 string          `json:"phase"`
+	InstanceID            int             `json:"instanceId"`
+	MaxFrequencyGHz       float64         `json:"maxFrequencyGHz"`
+	CurrentFrequencyGHz   float64         `json:"currentFrequencyGHz"`
+	CpuUsage              float64         `json:"cpuUsage"`
+	MaxMemoryMB           int             `json:"maxMemoryMB"`
+	CurrentMemoryMB       int             `json:"currentMemoryMB"`
+	MemoryUsage           float64         `json:"memoryUsage"`
+	NetworkInKbps         float64         `json:"networkInKbps"`
+	NetworkOutKbps        float64         `json:"networkOutKbps"`
+	Progress              float64         `json:"progress"`
+	ExecutionTimeSec      float64         `json:"executionTimeSec"`
+	ExecutionTimeGHz      float64         `json:"executionTimeGHz"`
+	SpecificationKey      string          `json:"specificationKey"`
+	CpuModel              string          `json:"cpuModel"`
+	CoreCount             int             `json:"coreCount"`
+	ExecutionAttemptCount int             `json:"executionAttemptCount"`
+	ClockRatio            float64         `json:"clockRatio"`
+}
+
+type RunningCoreCountByCpuModel struct {
+	Model            string `json:"model"`
+	Core             int    `json:"core"`
+	RunningCoreCount int    `json:"runningCoreCount"`
+}
+
+type RunningInstancesInfo struct {
+	PerRunningInstanceInfo     []PerRunningInstanceInfo     `json:"perRunningInstanceInfo"`
+	Timestamp                  string                       `json:"timestamp"`
+	AverageFrequencyGHz        float64                      `json:"averageFrequencyGHz"`
+	MaxFrequencyGHz            float64                      `json:"maxFrequencyGHz"`
+	MinFrequencyGHz            float64                      `json:"minFrequencyGHz"`
+	AverageMaxFrequencyGHz     float64                      `json:"averageMaxFrequencyGHz"`
+	AverageCpuUsage            float64                      `json:"averageCpuUsage"`
+	ClusterPowerIndicator      float64                      `json:"clusterPowerIndicator"`
+	AverageMemoryUsage         float64                      `json:"averageMemoryUsage"`
+	AverageNetworkInKbps       float64                      `json:"averageNetworkInKbps"`
+	AverageNetworkOutKbps      float64                      `json:"averageNetworkOutKbps"`
+	TotalNetworkInKbps         float64                      `json:"totalNetworkInKbps"`
+	TotalNetworkOutKbps        float64                      `json:"totalNetworkOutKbps"`
+	RunningCoreCountByCpuModel []RunningCoreCountByCpuModel `json:"runningCoreCountByCpuModel"`
+}
+
 // Struct representing a task status for a task
 type TaskStatus struct {
 	Timestamp                           time.Time                             `json:"timestamp,omitempty"`
@@ -77,6 +137,7 @@ type TaskStatus struct {
 	CancelledRange                      string                                `json:"cancelledRange,omitempty"`
 	FailedOnlyRange                     string                                `json:"failedOnlyRange,omitempty"`
 	StartedOnceRange                    string                                `json:"startedOnceRange,omitempty"`
+	RunningInstancesInfo
 }
 
 // Struct representing a constant for a task
