@@ -137,7 +137,7 @@ type TaskStatus struct {
 	CancelledRange                      string                                `json:"cancelledRange,omitempty"`
 	FailedOnlyRange                     string                                `json:"failedOnlyRange,omitempty"`
 	StartedOnceRange                    string                                `json:"startedOnceRange,omitempty"`
-	RunningInstancesInfo
+	RunningInstancesInfo                RunningInstancesInfo                  `json:"runningInstancesInfo,omitempty"`
 }
 
 // Struct representing a constant for a task
