@@ -80,7 +80,7 @@ func getErrorStringFromBody(rawMsg []byte) (string, error) {
 	return errorString, nil
 }
 
-func (c *Client) sendRequest(method string, payload []byte, headers map[string]string, endpoint string) ([]byte, int, error) {
+func (c *Client) sendRequest(method string, payload []byte, headers map[string]string, endpoint string, options ...func(*http.Request) error) ([]byte, int, error) {
 	// Build the request using url and endpoint
 	var req *http.Request
 	var err error
@@ -100,6 +100,11 @@ func (c *Client) sendRequest(method string, payload []byte, headers map[string]s
 	// Add more headers
 	for k, v := range headers {
 		req.Header.Add(k, v)
+	}
+
+	// Apply options
+	for _, option := range options {
+		option(req)
 	}
 
 	// Launch the request using the HTTP client
