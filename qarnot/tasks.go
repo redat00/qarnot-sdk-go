@@ -3,6 +3,7 @@ package qarnot
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/redat00/qarnot-sdk-go/internal/helpers"
@@ -364,12 +365,23 @@ type TaskSummary struct {
 }
 
 // Will list the tasks for the authenticated user
-func (c *Client) ListTasks() ([]Task, error) {
+// Optionally filter the results if any tags are provided
+func (c *Client) ListTasks(tags ...string) ([]Task, error) {
+	addQuery := func(req *http.Request) error {
+		query := req.URL.Query()
+		for _, tag := range tags {
+			query.Add("tag", tag)
+		}
+		req.URL.RawQuery = query.Encode()
+		return nil
+	}
+
 	data, _, err := c.sendRequest(
 		"GET",
 		[]byte{},
 		make(map[string]string),
 		"tasks",
+		addQuery,
 	)
 	if err != nil {
 		return []Task{}, fmt.Errorf("could not list tasks due to the following error : %v", err)
