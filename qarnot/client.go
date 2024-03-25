@@ -104,7 +104,10 @@ func (c *Client) sendRequest(method string, payload []byte, headers map[string]s
 
 	// Apply options
 	for _, option := range options {
-		option(req)
+		err = option(req)
+		if err != nil {
+			return []byte{}, 0, fmt.Errorf("could not apply option during request creation: %v", err)
+		}
 	}
 
 	// Launch the request using the HTTP client
