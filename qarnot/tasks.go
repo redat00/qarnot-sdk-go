@@ -243,7 +243,7 @@ const (
 type ForcedNetworkRule struct {
 	Inbound         bool   `json:"inbound"`
 	Proto           Proto  `json:"proto"`
-	Port            int    `json:"port"`
+	Port            string `json:"port"`
 	To              string `json:"to,omitempty"`
 	PublicHost      string `json:"public_host,omitempty"`
 	PublicPort      string `json:"public_port,omitempty"`
