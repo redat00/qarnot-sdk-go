@@ -245,15 +245,15 @@ type ForcedNetworkRule struct {
 	Proto           Proto  `json:"proto"`
 	Port            string `json:"port"`
 	To              string `json:"to,omitempty"`
-	PublicHost      string `json:"public_host,omitempty"`
-	PublicPort      string `json:"public_port,omitempty"`
+	PublicHost      string `json:"publicHost,omitempty"`
+	PublicPort      string `json:"publicPort,omitempty"`
 	Forwarder       string `json:"forwarder,omitempty"`
 	Priority        string `json:"priority,omitempty"`
 	Description     string `json:"description,omitempty"`
-	ToQbox          bool   `json:"to_qbox,omitempty"`
-	ToPayload       bool   `json:"to_payload,omitempty"`
+	ToQbox          bool   `json:"toQbox,omitempty"`
+	ToPayload       bool   `json:"toPayload,omitempty"`
 	Name            string `json:"name,omitempty"`
-	ApplicationType string `json:"application_type,omitempty"`
+	ApplicationType string `json:"applicationType,omitempty"`
 }
 
 // Struct representing a task with full details
