@@ -301,7 +301,7 @@ type Task struct {
 	CreationDate                        time.Time                    `json:"creationDate,omitempty"`
 	EndDate                             time.Time                    `json:"endDate,omitempty"`
 	WaitForPoolResourcesSynchronization bool                         `json:"waitForPoolResourcesSynchronization,omitempty"`
-	ForcedNetworkRules                  []ForcedNetworkRule          `json:"forcedNetworkRule,omitempty"`
+	ForcedNetworkRules                  []ForcedNetworkRule          `json:"forcedNetworkRules,omitempty"`
 }
 
 // Enum for the access constant string
@@ -357,7 +357,7 @@ type CreateTaskPayload struct {
 	DefaultResourcesCacheTTLSec         int                           `json:"defaultResourcesCacheTTLSec,omitempty"`
 	Privileges                          *Privileges                   `json:"privileges,omitempty"`
 	RetrySettings                       *RetrySettings                `json:"retrySettings,omitempty"`
-	ForcedNetworkRules                  *[]ForcedNetworkRule          `json:"forcedNetworkRule,omitempty"`
+	ForcedNetworkRules                  *[]ForcedNetworkRule          `json:"forcedNetworkRules,omitempty"`
 }
 
 // Struct representing a UUID response
