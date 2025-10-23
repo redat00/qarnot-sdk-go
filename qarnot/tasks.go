@@ -231,6 +231,31 @@ const (
 	Reserved SchedulingType = "reserved"
 )
 
+type Proto string
+
+const (
+	TCP   Proto = "tcp"
+	UDP   Proto = "udp"
+	HTTPS Proto = "https"
+)
+
+// Struct representing the network rules for a task
+type ForcedNetworkRule struct {
+	Inbound         bool   `json:"inbound"`
+	Proto           Proto  `json:"proto"`
+	Port            int    `json:"port"`
+	To              string `json:"to,omitempty"`
+	PublicHost      string `json:"public_host,omitempty"`
+	PublicPort      string `json:"public_port,omitempty"`
+	Forwarder       string `json:"forwarder,omitempty"`
+	Priority        string `json:"priority,omitempty"`
+	Description     string `json:"description,omitempty"`
+	ToQbox          bool   `json:"to_qbox,omitempty"`
+	ToPayload       bool   `json:"to_payload,omitempty"`
+	Name            string `json:"name,omitempty"`
+	ApplicationType string `json:"application_type,omitempty"`
+}
+
 // Struct representing a task with full details
 type Task struct {
 	Errors                              []QErrorPublic               `json:"errors,omitempty"`
@@ -276,6 +301,7 @@ type Task struct {
 	CreationDate                        time.Time                    `json:"creationDate,omitempty"`
 	EndDate                             time.Time                    `json:"endDate,omitempty"`
 	WaitForPoolResourcesSynchronization bool                         `json:"waitForPoolResourcesSynchronization,omitempty"`
+	ForcedNetworkRules                  []ForcedNetworkRule          `json:"forcedNetworkRule,omitempty"`
 }
 
 // Enum for the access constant string
@@ -331,6 +357,7 @@ type CreateTaskPayload struct {
 	DefaultResourcesCacheTTLSec         int                           `json:"defaultResourcesCacheTTLSec,omitempty"`
 	Privileges                          *Privileges                   `json:"privileges,omitempty"`
 	RetrySettings                       *RetrySettings                `json:"retrySettings,omitempty"`
+	ForcedNetworkRules                  []ForcedNetworkRule           `json:"forcedNetworkRule,omitempty"`
 }
 
 // Struct representing a UUID response
