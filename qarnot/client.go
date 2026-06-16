@@ -113,14 +113,14 @@ func (c *Client) sendRequest(method string, payload []byte, headers map[string]s
 	// Launch the request using the HTTP client
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		panic(fmt.Errorf("an error happened during the execution of the request: %v", err))
+		return []byte{}, 0, fmt.Errorf("an error happened during the execution of the request: %w", err)
 	}
 	defer resp.Body.Close()
 
 	// Read the content of the body
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		panic(err)
+		return []byte{}, resp.StatusCode, fmt.Errorf("could not read response body: %w", err)
 	}
 
 	// Check that the request did not fail
@@ -132,7 +132,7 @@ func (c *Client) sendRequest(method string, payload []byte, headers map[string]s
 
 		errorString, err := getErrorStringFromBody(rawMsg)
 		if err != nil {
-			panic(err)
+			return []byte{}, resp.StatusCode, fmt.Errorf("could not extract error message from response body: %w", err)
 		}
 
 		return []byte{}, resp.StatusCode, fmt.Errorf("[HTTP %v] %v", resp.StatusCode, errorString)
