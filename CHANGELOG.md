@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.7.2] - 2026-07-13
+### :bug: Bug Fixes
+- [`fd948b6`](https://github.com/redat00/qarnot-sdk-go/commit/fd948b65a259f6584057831aa4a2e3f387890c5f) - do not panic when API calls fail but return error instead *(commit by [@yayuniversal](https://github.com/yayuniversal))*
+
+
 ## [v0.7.1] - 2025-10-23
 ### :bug: Bug Fixes
 - [`4e0441a`](https://github.com/redat00/qarnot-sdk-go/commit/4e0441aa63677cd61ed3b0709e7eb398f86b9a82) - **tasks**: slices should be passed by pointer in CreateTaskPayload *(commit by [@nnbrkm](https://github.com/nnbrkm))*
@@ -26,3 +31,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [v0.6.0]: https://github.com/redat00/qarnot-sdk-go/compare/v0.5.0...v0.6.0
 [v0.7.0]: https://github.com/redat00/qarnot-sdk-go/compare/v0.6.0...v0.7.0
 [v0.7.1]: https://github.com/redat00/qarnot-sdk-go/compare/v0.7.0...v0.7.1
+[v0.7.2]: https://github.com/redat00/qarnot-sdk-go/compare/v0.7.1...v0.7.2
